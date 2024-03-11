@@ -4,7 +4,7 @@ import ReceiptView from 'src/views/product/ReceiptView'
 const Receipt = () => {
   return (
     <Card>
-      <CardHeader title='Terimakasih Sudah' titleTypographyProps={{ variant: 'h6' }} />
+      <CardHeader title='Terimakasih Sudah Membeli' titleTypographyProps={{ variant: 'h6' }} />
       <Divider sx={{ margin: 0 }} />
       <ReceiptView />
     </Card>
