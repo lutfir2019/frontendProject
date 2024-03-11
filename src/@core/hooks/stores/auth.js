@@ -41,7 +41,7 @@ const useAuth = create(set => ({
     ]
     set({ is_Loading: true, is_SoftLoading: true })
     try {
-      const response = { status: 200 }
+      const response = { data: { token: 'mjckjsdkjh-lkvuytuydsadfadt' }, status: 200 }
       // const response = await axiosInstance.post('/', credentials)
 
       if (response.status === 200) {
@@ -51,7 +51,7 @@ const useAuth = create(set => ({
         const stringify = JSON.stringify(data[0])
         const base64 = btoa(stringify)
         Cookies.set('user', base64, { path: '/' }) // Cookie berlaku selama 7 hari
-        Cookies.set('token', 'ahkdhjah-sjdjDJ', { path: '/' }) // Cookie berlaku selama 7 hari
+        Cookies.set('token', response.data.token, { path: '/' }) // Cookie berlaku selama 7 hari
 
         set({ data: data, is_Loading: false, is_SoftLoading: false })
       } else {
