@@ -41,11 +41,12 @@ const useAuth = create(set => ({
     ]
     set({ is_Loading: true, is_SoftLoading: true })
     try {
-      const response = await axiosInstance.post('/', credentials)
+      const response = { status: 200 }
+      // const response = await axiosInstance.post('/', credentials)
 
       if (response.status === 200) {
         axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`
-        
+
         // Tambahkan data pengguna ke cookie
         const stringify = JSON.stringify(data[0])
         const base64 = btoa(stringify)
