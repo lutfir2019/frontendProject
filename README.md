@@ -60,3 +60,6 @@ yarn dev
 
 ## Theme 🔥
 - [ThemeSelection](https://themeselection.com/)
+
+## View Demo 😎
+- [Dashboard Admin](https://admin-dashboard-one-ebon.vercel.app/pages/login/)
