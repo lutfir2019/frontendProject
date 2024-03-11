@@ -1,12 +1,11 @@
-'use client'
 // ** MUI Imports
 import { Grid } from '@mui/material'
 import { useEffect, useState } from 'react'
 import PaginationOutlined from 'src/views/pagination/paginationOutlined'
-import useUser from 'src/stores/user/user'
 import TableShop from 'src/views/shop/TableShop'
-import useAuth from 'src/stores/auth'
 import { useRouter } from 'next/router'
+import useUser from 'src/@core/hooks/stores/user/user'
+import useAuth from 'src/@core/hooks/stores/auth'
 
 const User = () => {
   const [count, setCount] = useState(1)

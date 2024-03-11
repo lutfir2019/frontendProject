@@ -14,9 +14,9 @@ import DatePickerWrapper from 'src/@core/styles/libs/react-datepicker'
 import { styled } from '@mui/material/styles'
 import 'react-datepicker/dist/react-datepicker.css'
 import { useRouter } from 'next/router'
-import useProduct from 'src/stores/product/product'
-import useAuth from 'src/stores/auth'
 import { LoadingButton } from '@mui/lab'
+import useProduct from 'src/@core/hooks/stores/product/product'
+import useAuth from 'src/@core/hooks/stores/auth'
 
 const CustomInput = forwardRef((props, ref) => {
   return <TextField fullWidth {...props} inputRef={ref} label='Tanggal Pembelian' autoComplete='off' />

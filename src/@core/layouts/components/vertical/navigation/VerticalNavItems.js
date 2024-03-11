@@ -1,11 +1,11 @@
 'use client'
 // ** Custom Menu Components
-import useAuth from 'src/stores/auth'
 import VerticalNavLink from './VerticalNavLink'
 import VerticalNavSectionTitle from './VerticalNavSectionTitle'
 import { useEffect } from 'react'
 import { useRouter } from 'next/router'
-import useCart from 'src/stores/cart/useCart'
+import useAuth from 'src/@core/hooks/stores/auth'
+import useCart from 'src/@core/hooks/stores/cart/useCart'
 
 const resolveNavItemComponent = item => {
   if (item.sectionTitle) return VerticalNavSectionTitle

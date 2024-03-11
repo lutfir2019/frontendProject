@@ -1,4 +1,3 @@
-'use client'
 import { styled } from '@mui/material/styles'
 import {
   Button,
@@ -16,12 +15,12 @@ import {
 import { Minus, Plus } from 'mdi-material-ui'
 import { formatRupiah } from 'src/@core/utils/globalFunction'
 import CartListSection from 'src/layouts/components/cart/nameSection'
-import useCart from 'src/stores/cart/useCart'
 import Link from 'next/link'
 import { useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { LoadingButton } from '@mui/lab'
-import useAlert from 'src/stores/alert'
+import useAlert from 'src/@core/hooks/stores/alert'
+import useCart from 'src/@core/hooks/stores/cart/useCart'
 
 const ButtonClick = styled(ButtonBase)(({ theme }) => ({
   '&:hover': {
@@ -44,6 +43,7 @@ const CellTabelButton = styled(TableCell)(({ theme }) => ({
   alignContent: 'center',
   position: 'relative'
 }))
+
 const CartList = () => {
   const { data, addData, deleteData, updateData, getData, is_Loading } = useCart()
   const router = useRouter()
@@ -58,18 +58,22 @@ const CartList = () => {
 
   data.forEach((item, _i) => {
     const existingCategoryIndex = cart_list?.findIndex(cartItem => cartItem?.catnm === item?.catnm)
+    
     // Mengecek apakah prcd sudah ada sebelum menambahkan data
+   
     const prcdExists = cart_list?.some(
       cartItem => cartItem?.catnm === item?.catnm && cartItem?.items?.some(i => i?.prcd === item?.prcd)
     )
 
     if (existingCategoryIndex === -1) {
+    
       // Jika kategori belum ada, tambahkan kategori baru ke dalam cart_list
       cart_list.push({
         catnm: item?.catnm,
         items: [{ ...item, index: _i }]
       })
     } else if (!prcdExists) {
+    
       // Jika kategori sudah ada tetapi prcd belum ada, tambahkan item ke dalam array items di kategori yang sesuai
       cart_list[existingCategoryIndex]?.items.push({ ...item, index: _i })
     }
@@ -93,6 +97,7 @@ const CartList = () => {
         variant: 'standard',
         is_Active: true
       })
+      
       return
     }
 
@@ -103,6 +108,7 @@ const CartList = () => {
     const updatedItems = cart_list.flatMap(cart => {
       return cart.items.map(item => {
         const newQt = { qty: item.qty - count_product[item.prcd], qtby: count_product[item.prcd] }
+        
         return { ...item, ...newQt }
       })
     })

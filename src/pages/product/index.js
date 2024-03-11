@@ -2,8 +2,8 @@
 import { Grid } from '@mui/material'
 import PaginationOutlined from 'src/views/pagination/paginationOutlined'
 import { useEffect, useState } from 'react'
-import useProduct from 'src/stores/product/product'
 import TableProduct from 'src/views/product/TableProduct'
+import useProduct from 'src/@core/hooks/stores/product/product'
 
 const Product = () => {
   const productStore = useProduct()

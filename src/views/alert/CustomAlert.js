@@ -1,7 +1,7 @@
 import { Alert } from '@mui/material'
 import { styled } from '@mui/material/styles'
 import { useEffect, useState } from 'react'
-import useAlert from 'src/stores/alert'
+import useAlert from 'src/@core/hooks/stores/alert'
 
 const Container = styled('div')(({ theme }) => ({
   position: 'absolute',

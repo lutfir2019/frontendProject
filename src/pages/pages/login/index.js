@@ -1,4 +1,3 @@
-'use client'
 // ** React Imports
 import { useEffect, useState } from 'react'
 
@@ -39,7 +38,7 @@ import BlankLayout from 'src/@core/layouts/BlankLayout'
 // ** Demo Imports
 import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
 import { Alert, LoadingButton } from '@mui/lab'
-import useAuth from 'src/stores/auth'
+import useAuth from 'src/@core/hooks/stores/auth'
 
 // ** Styled Components
 const Card = styled(MuiCard)(({ theme }) => ({
@@ -66,15 +65,17 @@ const LoginPage = () => {
     password: '',
     showPassword: false
   })
+  
   const [error, setError] = useState({
     is_Error: false,
     message: ''
   })
-  const authStore = useAuth()
-
+  
+  
   // ** Hook
   const theme = useTheme()
   const router = useRouter()
+  const authStore = useAuth()
 
   const handleChange = prop => event => {
     setValues({ ...values, [prop]: event.target.value })

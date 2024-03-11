@@ -16,10 +16,10 @@ import FormControl from '@mui/material/FormControl'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { LoadingButton } from '@mui/lab'
-import useUser from 'src/stores/user/user'
-import useAlert from 'src/stores/alert'
 import { Typography } from '@mui/material'
-import useAuth from 'src/stores/auth'
+import useAlert from 'src/@core/hooks/stores/alert'
+import useAuth from 'src/@core/hooks/stores/auth'
+import useUser from 'src/@core/hooks/stores/user/user'
 
 const createData = (tkcd, tknm) => {
   return { tkcd, tknm }

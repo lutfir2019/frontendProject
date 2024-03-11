@@ -18,9 +18,9 @@ import FormControlLabel from '@mui/material/FormControlLabel'
 // ** Styled Components
 import { LoadingButton } from '@mui/lab'
 import Link from 'next/link'
-import useAlert from 'src/stores/alert'
-import useUser from 'src/stores/user/user'
 import { useRouter } from 'next/router'
+import useAlert from 'src/@core/hooks/stores/alert'
+import useUser from 'src/@core/hooks/stores/user/user'
 
 const TabInfo = () => {
   // ** State

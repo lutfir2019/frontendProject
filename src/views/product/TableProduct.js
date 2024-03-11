@@ -13,10 +13,10 @@ import TableCell, { tableCellClasses } from '@mui/material/TableCell'
 import { CartPlus, Plus } from 'mdi-material-ui'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
-import useCart from 'src/stores/cart/useCart'
-import useProduct from 'src/stores/product/product'
 import { Button, CardActions, FormControl, InputLabel, MenuItem, Select } from '@mui/material'
-import useAuth from 'src/stores/auth'
+import useAuth from 'src/@core/hooks/stores/auth'
+import useProduct from 'src/@core/hooks/stores/product/product'
+import useCart from 'src/@core/hooks/stores/cart/useCart'
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {

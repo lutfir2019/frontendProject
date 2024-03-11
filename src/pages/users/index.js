@@ -2,10 +2,10 @@
 import { Grid } from '@mui/material'
 import { useEffect, useState } from 'react'
 import PaginationOutlined from 'src/views/pagination/paginationOutlined'
-import useUser from 'src/stores/user/user'
 import TableUser from 'src/views/user/TableUser'
 import checkUserRole from 'src/@core/utils/roleChecker'
-import useAuth from 'src/stores/auth'
+import useUser from 'src/@core/hooks/stores/user/user'
+import useAuth from 'src/@core/hooks/stores/auth'
 
 const User = () => {
   const [count, setCount] = useState(1)

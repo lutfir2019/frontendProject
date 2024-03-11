@@ -14,10 +14,9 @@ import TableCell, { tableCellClasses } from '@mui/material/TableCell'
 import { Plus } from 'mdi-material-ui'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
-import useCart from 'src/stores/cart/useCart'
-import useUser from 'src/stores/user/user'
-import useShop from 'src/stores/shop/shop'
-import useAuth from 'src/stores/auth'
+import useCart from 'src/@core/hooks/stores/cart/useCart'
+import useShop from 'src/@core/hooks/stores/shop/shop'
+import useAuth from 'src/@core/hooks/stores/auth'
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {

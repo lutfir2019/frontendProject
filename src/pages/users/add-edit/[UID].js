@@ -1,4 +1,3 @@
-'use client'
 // ** React Imports
 import { useEffect, useState } from 'react'
 
@@ -23,9 +22,9 @@ import TabSecurity from 'src/views/user/TabSecurity'
 
 // ** Third Party Styles Imports
 import 'react-datepicker/dist/react-datepicker.css'
-import useUser from 'src/stores/user/user'
 import { useRouter } from 'next/router'
-import useAuth from 'src/stores/auth'
+import useAuth from 'src/@core/hooks/stores/auth'
+import useUser from 'src/@core/hooks/stores/user/user'
 
 const Tab = styled(MuiTab)(({ theme }) => ({
   [theme.breakpoints.down('md')]: {

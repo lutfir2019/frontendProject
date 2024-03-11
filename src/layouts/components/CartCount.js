@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { CartOutline } from 'mdi-material-ui'
 import { ButtonBase } from '@mui/material'
 import { styled } from '@mui/material/styles'
-import useCart from 'src/stores/cart/useCart'
 import Link from 'next/link'
+import useCart from 'src/@core/hooks/stores/cart/useCart'
 
 const CartButton = styled(ButtonBase)(({ theme }) => ({
   width: '40px',

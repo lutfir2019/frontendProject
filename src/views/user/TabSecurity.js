@@ -22,7 +22,7 @@ import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
 import LockOpenOutline from 'mdi-material-ui/LockOpenOutline'
 import { LoadingButton } from '@mui/lab'
 import Link from 'next/link'
-import useAlert from 'src/stores/alert'
+import useAlert from 'src/@core/hooks/stores/alert'
 
 const TabSecurity = () => {
   // ** States
