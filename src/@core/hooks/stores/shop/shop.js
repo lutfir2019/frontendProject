@@ -1,3 +1,4 @@
+import axiosInstance from 'src/@core/utils/axiosInstance'
 import { create } from 'zustand'
 
 const useShop = create(set => ({
@@ -6,60 +7,119 @@ const useShop = create(set => ({
   is_Error: false,
   is_Loading: false,
   is_SoftLoading: false,
+  page: 1,
+  page_size: 10,
+  total_page: 1,
+  count_item: 0,
 
   // Fungsi untuk mengambil data produk berdasarkan parameter
   getData: async params => {
     set({ is_Loading: true, is_SoftLoading: true })
-    // Simulasi pengambilan data
-    let rows_toko = [
-      createData('LWG001', 'Toko Lawang', 'Jalan Kenangan adasdad'),
-      createData('LWG002', 'Lawang Indah', 'Jl. MEgawati'),
-      createData('DCI001', 'Distro Satu', 'Jl. DI Panjaitan')
-    ]
-
-    // Lakukan filter hanya ketika terdapat params
-    if (params?.tkcd) {
-      rows_toko = rows_toko.filter(({ tkcd }) => tkcd === params.tkcd)
-    } else if (params?.tknm) {
-      rows_toko = rows_toko.filter(({ tknm }) => tknm === params.tknm)
+    const { page, page_size } = useShop.getState()
+    try {
+      const response = await axiosInstance.post('/api/shops/get-shop', {
+        page: page,
+        page_size: page_size,
+        ...params
+      })
+      set({
+        data: response.data?.data?.data,
+        is_Loading: false,
+        is_SoftLoading: false,
+        is_Error: false,
+        message: response.data?.message,
+        page: response.data?.data?.pagination?.currentPage,
+        page_size: response.data?.data?.pagination?.perPage,
+        total_page: response.data?.data?.pagination?.totalPages,
+        count_item: response.data?.data?.pagination?.totalItems
+      })
+      return response
+    } catch (error) {
+      console.error('Terjadi kesalahan:', error)
+      set({ is_Error: true, message: error.response?.data.message, is_Loading: false, is_SoftLoading: false })
+      return error
     }
-
-    // Mengatur state data dengan data yang diperoleh
-    set({ data: rows_toko, is_Loading: false, is_SoftLoading: false })
   },
 
   // Fungsi untuk menambahkan data ke state
-  addData: params => {
+  addData: async params => {
     set({ is_Loading: true, is_SoftLoading: true })
-    set(state => ({
-      data: [...state.data, params],
-      is_Loading: false,
-      is_SoftLoading: false
-    }))
+    try {
+      const response = await axiosInstance.post(`/api/shops/post-shop`, params)
+      set({
+        is_Loading: false,
+        is_SoftLoading: false,
+        message: response.data?.message
+      })
+      return response
+    } catch (error) {
+      console.error('Terjadi kesalahan:', error)
+      set({ is_Error: true, message: error.response?.data?.message, is_Loading: false, is_SoftLoading: false })
+      return error
+    }
+  },
+
+  getDetails: async params => {
+    set({ is_Loading: true, is_SoftLoading: true })
+    const { page, page_size } = useShop.getState()
+    try {
+      const response = await axiosInstance.post(`/api/shops/get-shop/${params?.spcd}`, {
+        page: page,
+        page_size: page_size
+      })
+      set({
+        data: response.data?.data?.data,
+        is_Loading: false,
+        is_SoftLoading: false,
+        message: response.data?.message,
+        page: response.data?.data?.pagination?.currentPage,
+        page_size: response.data?.data?.pagination?.perPage,
+        total_page: response.data?.data?.pagination?.totalPages,
+        count_item: response.data?.data?.pagination?.totalItems
+      })
+      return response
+    } catch (error) {
+      console.error('Terjadi kesalahan:', error)
+      set({ is_Error: true, message: error.response?.data.message, is_Loading: false, is_SoftLoading: false })
+      return error
+    }
   },
 
   // Fungsi untuk memperbarui data dalam state
-  updateData: params => {
+  updateData: async params => {
     set({ is_Loading: true, is_SoftLoading: true })
-    // Anda perlu menambahkan logika untuk memperbarui data di sini
-    console.log('Update data:', params)
-    set(state => ({ is_Loading: false, is_SoftLoading: false }))
+    try {
+      const response = await axiosInstance.put(`/api/shops/put-shop/${params?.spcd}`, params)
+      set({
+        is_Loading: false,
+        is_SoftLoading: false,
+        message: response.data?.message
+      })
+      return response
+    } catch (error) {
+      console.error('Terjadi kesalahan:', error)
+      set({ is_Error: true, message: error.response?.data?.message, is_Loading: false, is_SoftLoading: false })
+      return error
+    }
   },
 
   // Fungsi untuk menghapus data dari state
-  deleteData: params => {
+  deleteData: async params => {
     set({ is_Loading: true, is_SoftLoading: true })
-    set(state => {
-      // Menghapus data dari state berdasarkan prcd dan index
-      const filter_data = state.data.filter((item, index) => !(item?.prcd === params?.prcd && index === params?.index))
-      return { data: filter_data, is_Loading: false, is_SoftLoading: false }
-    })
+    try {
+      const response = await axiosInstance.post(`/api/shops/delete-shop/${params.spcd}`)
+      set({
+        is_Loading: false,
+        is_SoftLoading: false,
+        message: response.data?.message
+      })
+      return response
+    } catch (error) {
+      console.error('Terjadi kesalahan:', error)
+      set({ is_Error: true, message: error.response?.data?.message, is_Loading: false, is_SoftLoading: false })
+      return error
+    }
   }
 }))
-
-// Fungsi pembuat data produk
-const createData = (tkcd, tknm, almt) => {
-  return { tkcd, tknm, almt }
-}
 
 export default useShop

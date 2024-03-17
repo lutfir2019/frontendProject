@@ -10,17 +10,18 @@ const { Card, CardHeader, Divider } = require('@mui/material')
 const Shop = () => {
   const shopStore = useShop()
   const router = useRouter()
-  const { TKCD } = router.query
+  const { SPCD } = router.query
   const authStore = useAuth()
 
   useEffect(() => {
-    if(authStore.data[0]?.rlcd != 'ROLE-1') router.replace('/')
-    shopStore.getData({ tkcd: TKCD })
+    if (authStore.data[0]?.rlcd != 'ROLE-1') router.replace('/')
+    if (SPCD == '-') return
+    shopStore.getDetails({ spcd: SPCD })
   }, [])
 
   return (
     <Card>
-      <CardHeader title='Multi Column with Form Separator' titleTypographyProps={{ variant: 'h6' }} />
+      <CardHeader title='Detail Toko' titleTypographyProps={{ variant: 'h6' }} />
       <Divider sx={{ margin: 0 }} />
       <AddEditShop />
     </Card>

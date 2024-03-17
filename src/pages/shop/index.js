@@ -1,28 +1,40 @@
 // ** MUI Imports
 import { Grid } from '@mui/material'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import PaginationOutlined from 'src/views/pagination/paginationOutlined'
 import TableShop from 'src/views/shop/TableShop'
 import { useRouter } from 'next/router'
-import useUser from 'src/@core/hooks/stores/user/user'
 import useAuth from 'src/@core/hooks/stores/auth'
+import useShop from 'src/@core/hooks/stores/shop/shop'
+import useAlert from 'src/@core/hooks/stores/alert'
 
 const User = () => {
-  const [count, setCount] = useState(1)
-  const userStore = useUser()
   const authStore = useAuth()
   const router = useRouter()
+  const shopStore = useShop()
+  const alertStore = useAlert()
 
-  useEffect(() => {
-    if(authStore.data[0]?.rlcd != 'ROLE-1') router.replace('/')
-    userStore.getData()
+  useEffect(async () => {
+    alertStore.setLoading({ is_Loading: true })
+    if (authStore.data[0]?.rlcd != 'ROLE-1') router.replace('/')
+    try {
+      await shopStore.getData()
+    } catch (error) {
+      console.error(`Error!`, error)
+    } finally {
+      alertStore.setLoading({ is_Loading: false })
+    }
   }, [])
 
   return (
     <Grid container spacing={6}>
       <Grid item xs={12}>
         <TableShop />
-        <PaginationOutlined count={10} page={count} onChange={e => setCount(e)} />
+        <PaginationOutlined
+          count={shopStore.total_page}
+          page={shopStore.page}
+          onChange={e => shopStore.getData({ page: e })}
+        />
       </Grid>
     </Grid>
   )

@@ -6,7 +6,7 @@ import Cookies from 'js-cookie'
 const auth = (WrappedComponent) => {
   const Wrapper = (props) => {
     const router = useRouter();
-    const token = Cookies.get('token')
+    const token = Cookies.get('__sid')
     
     useEffect(() => {
       // Check if the user is not logged in, redirect to login page

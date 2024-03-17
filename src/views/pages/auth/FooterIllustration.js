@@ -32,7 +32,7 @@ const FooterIllustrationsV1 = props => {
   // ** Props
   const { image1, image2 } = props
   const router = useRouter()
-  const token = Cookies.get('token')
+  const token = Cookies.get('__sid')
 
   // ** Hook
   const theme = useTheme()

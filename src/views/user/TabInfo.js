@@ -30,32 +30,39 @@ const TabInfo = () => {
   const userStore = useUser()
   const [values, setValue] = useState({
     almt: '',
-    nhp: '',
+    pn: '',
     gdr: ''
   })
 
   useEffect(() => {
     if (UID === '-') return
-    setValue({ ...userStore.data[0] })
-  }, [userStore])
+    setValue({ ...userStore.data })
+  }, [userStore.data])
 
   const handleChange = props => event => {
     setValue({ ...values, [props]: event.target.value })
   }
 
-  const onSubmit = event => {
-    event.preventDefault()
-    console.log(values)
-    alertStore.setAlert({
-      type: 'success',
-      message: 'Success add data',
-      is_Active: true
-    })
+  const onSubmit = async () => {
+    const ress = await userStore.updateData(values)
+    if (ress.status == 200) {
+      alertStore.setAlert({
+        type: 'success',
+        message: ress.data?.message,
+        is_Active: true
+      })
+    } else {
+      alertStore.setAlert({
+        type: 'error',
+        message: ress?.response?.data?.message,
+        is_Active: true
+      })
+    }
   }
 
   return (
     <CardContent>
-      <form onSubmit={onSubmit}>
+      <form>
         <Grid container spacing={7}>
           <Grid item xs={12} sx={{ marginTop: 4.8 }}>
             <TextField
@@ -74,8 +81,8 @@ const TabInfo = () => {
               type='number'
               label='Phone'
               placeholder='081234567890'
-              value={values.nhp}
-              onChange={handleChange('nhp')}
+              value={values.pn}
+              onChange={handleChange('pn')}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -94,7 +101,13 @@ const TabInfo = () => {
             </FormControl>
           </Grid>
           <Grid item xs={12}>
-            <LoadingButton variant='contained' sx={{ marginRight: 3.5 }} type='submit'>
+            <LoadingButton
+              variant='contained'
+              sx={{ marginRight: 3.5 }}
+              type='button'
+              onClick={() => onSubmit()}
+              loading={userStore.is_SoftLoading}
+            >
               Save Changes
             </LoadingButton>
             <Link href='/users'>

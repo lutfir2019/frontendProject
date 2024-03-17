@@ -25,6 +25,7 @@ import 'react-datepicker/dist/react-datepicker.css'
 import { useRouter } from 'next/router'
 import useAuth from 'src/@core/hooks/stores/auth'
 import useUser from 'src/@core/hooks/stores/user/user'
+import useShop from 'src/@core/hooks/stores/shop/shop'
 
 const Tab = styled(MuiTab)(({ theme }) => ({
   [theme.breakpoints.down('md')]: {
@@ -50,22 +51,25 @@ const AccountDetails = () => {
   const authStore = useAuth()
 
   const userStore = useUser()
+  const shopStore = useShop()
   const router = useRouter()
-  const { UID } = router.query
+  const { UNM } = router.query
   const [tab_after_add, setTabAfterAdd] = useState(false)
   const [userMatch, setUserMatch] = useState(false)
 
-  useEffect(() => {
-    if (UID == '-') return
-    userStore.getData({ uid: UID })
+  useEffect(async () => {
+    await shopStore.getData({page: 1, page_size: 999})
+    
+    if (UNM == '-') return
+    await userStore.getDetails({ unm: UNM })
     setTabAfterAdd(true)
 
     if ( authStore.data[0]?.rlcd === 'ROLE-1'){
       setUserMatch(true)
-    }else if(authStore.data[0]?.uid === UID){
+    }else if(authStore.data[0]?.unm === UNM){
       setUserMatch(true)
     }
-  }, [UID])
+  }, [UNM])
 
   const handleChange = (event, newValue) => {
     setTabValue(newValue)

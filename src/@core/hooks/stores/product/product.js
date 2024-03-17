@@ -1,3 +1,4 @@
+import axiosInstance from 'src/@core/utils/axiosInstance'
 import { create } from 'zustand'
 
 const useProduct = create(set => ({
@@ -6,6 +7,10 @@ const useProduct = create(set => ({
   is_Error: false,
   is_Loading: false,
   is_SoftLoading: false,
+  page: 1,
+  page_size: 10,
+  total_page: 1,
+  count_item: 0,
 
   // Fungsi untuk mengambil data produk berdasarkan parameter
   getData: async params => {
@@ -32,13 +37,21 @@ const useProduct = create(set => ({
   },
 
   // Fungsi untuk menambahkan data ke state
-  addData: params => {
+  addData: async params => {
     set({ is_Loading: true, is_SoftLoading: true })
-    set(state => ({
-      data: [...state.data, params],
-      is_Loading: false,
-      is_SoftLoading: false
-    }))
+    try {
+      const response = await axiosInstance.post(`/api/products/post-product`, {data: params})
+      set({
+        is_Loading: false,
+        is_SoftLoading: false,
+        message: response.data?.message
+      })
+      return response
+    } catch (error) {
+      console.error('Terjadi kesalahan:', error)
+      set({ is_Error: true, message: error.response?.data?.message, is_Loading: false, is_SoftLoading: false })
+      return error
+    }
   },
 
   // Fungsi untuk memperbarui data dalam state

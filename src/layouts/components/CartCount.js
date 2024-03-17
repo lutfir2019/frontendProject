@@ -25,7 +25,8 @@ const CountCart = styled('div')(({ theme }) => ({
   color: theme.palette.common.white,
   position: 'absolute',
   top: '18px',
-  left: '18px'
+  left: '18px',
+  paddingTop: '1px'
 }))
 
 const CartCount = () => {

@@ -17,6 +17,7 @@ import { useRouter } from 'next/router'
 import { LoadingButton } from '@mui/lab'
 import useProduct from 'src/@core/hooks/stores/product/product'
 import useAuth from 'src/@core/hooks/stores/auth'
+import useAlert from 'src/@core/hooks/stores/alert'
 
 const CustomInput = forwardRef((props, ref) => {
   return <TextField fullWidth {...props} inputRef={ref} label='Tanggal Pembelian' autoComplete='off' />
@@ -58,19 +59,24 @@ const listCatnm = [
 const AddEditProduct = () => {
   const router = useRouter()
   const date = new Date()
-  const { PRCD } = router.query
+  const { PCD } = router.query
+
   const productStore = useProduct()
   const authStore = useAuth()
+  const alertStore = useAlert()
+
   const [isDisableField, setDisableField] = useState(true)
   const [productList, setProductList] = useState([
     {
       catcd: 'pkn',
       catnm: '',
-      prnm: '',
-      prcd: '',
+      pnm: '',
+      pcd: '',
       price: 0,
       crby: date,
-      qty: 0
+      qty: 0,
+      spcd: 'OGT',
+      spnm: 'Toko Lawang'
     }
   ])
 
@@ -83,7 +89,7 @@ const AddEditProduct = () => {
   }, [authStore.data[0]?.rlcd])
 
   useEffect(() => {
-    if (PRCD == '-') return
+    if (PCD == '-') return
     setProductList([...productStore?.data])
   }, [productStore])
 
@@ -108,9 +114,9 @@ const AddEditProduct = () => {
       ...productList,
       {
         catcd: 'pkn',
-        catnm: '',
-        prnm: '',
-        prcd: '',
+        catnm: 'Pakaian',
+        pnm: '',
+        pcd: '',
         price: 0,
         crby: date,
         qty: 0
@@ -124,9 +130,28 @@ const AddEditProduct = () => {
     setProductList(updatedProductList)
   }
 
-  const onSubmit = event => {
+  const onSubmit = async event => {
     event.preventDefault()
-    console.log('productList', productList)
+    let ress
+    if (PCD == '-') {
+      ress = await productStore.addData(productList)
+    } else {
+      ress = await productStore.updateData({ productList })
+    }
+
+    if (ress.status == 200) {
+      alertStore.setAlert({
+        type: 'success',
+        message: ress.data?.message,
+        is_Active: true
+      })
+    } else {
+      alertStore.setAlert({
+        type: 'error',
+        message: ress.response?.data?.message,
+        is_Active: true
+      })
+    }
   }
 
   return (
@@ -138,10 +163,10 @@ const AddEditProduct = () => {
               <Tooltip title='Kode max. 4 karakter' placement='top-start'>
                 <TextField
                   fullWidth
-                  name='prcd'
+                  name='pcd'
                   label='Kode Produk'
                   placeholder='contoh: KSK01'
-                  value={product?.prcd}
+                  value={product?.pcd}
                   onChange={e => handleChange(e, index)}
                   required
                   disabled={isDisableField}
@@ -180,9 +205,9 @@ const AddEditProduct = () => {
               <TextField
                 fullWidth
                 label='Nama Produk'
-                name='prnm'
+                name='pnm'
                 placeholder='contoh: Kaos Kerah'
-                value={product.prnm}
+                value={product.pnm}
                 onChange={e => handleChange(e, index)}
                 required
                 disabled={isDisableField}
@@ -236,7 +261,7 @@ const AddEditProduct = () => {
           <Divider sx={{ marginTop: 3 }} />
         </CardContent>
       ))}
-      {PRCD == '-' && (
+      {PCD == '-' && (
         <CardActions
           sx={{
             marginTop: 5,

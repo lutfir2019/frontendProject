@@ -8,74 +8,77 @@ const useAuth = create(set => ({
   is_Error: false,
   is_Loading: false,
   is_SoftLoading: false,
+  token: Cookies.get('__sid'),
 
-  // Fungsi untuk mengambil data produk berdasarkan parameter
   getData: async params => {
-    set({ is_Loading: true, is_SoftLoading: true })
-    // Menggunakan cookie untuk menyimpan data
-    const base64 = Cookies.get('user')
-    let stringify = ''
-    let user = []
-    if (base64) {
-      stringify = atob(base64)
-      user = JSON.parse(stringify)
+    try {
+      const { token } = useAuth.getState()
+      axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`
+      set({ is_Loading: true, is_SoftLoading: true })
+      // Menggunakan cookie untuk menyimpan data
+      const base64 = Cookies.get('__u')
+      let user = []
+      if (base64) {
+        const stringify = atob(base64)
+        user = JSON.parse(stringify)
+      }
+      set({ data: [user], is_Loading: false, is_SoftLoading: false })
+    } catch (error) {
+      console.error('Terjadi kesalahan:', error)
+      set({ is_Error: true, message: error.message, is_Loading: false, is_SoftLoading: false })
+      return error // Melemparkan kembali kesalahan untuk ditangani di luar fungsi
     }
-    set(state => ({ data: [user], is_Loading: false, is_SoftLoading: false }))
   },
 
-  // Fungsi untuk melakukan login
   login: async credentials => {
-    const data = [
-      {
-        uid: 'sebastian-stringg',
-        nam: 'Sebastian',
-        unam: 'sebastia123',
-        rlcd: 'ROLE-2',
-        rlnm: 'Admin',
-        tkcd: 'LWG001',
-        tknm: 'Toko Lawang',
-        almt: 'jl. asdasd asdasd klasd9',
-        nhp: '081234567891',
-        gdr: 'laki-laki'
-      }
-    ]
-    set({ is_Loading: true, is_SoftLoading: true })
     try {
-      const response = { data: { token: 'mjckjsdkjh-lkvuytuydsadfadt' }, status: 200 }
-      // const response = await axiosInstance.post('/', credentials)
+      set({ is_Loading: true, is_SoftLoading: true })
+      const response = await axiosInstance.post('/api/auth/login', credentials)
+      axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${response.data?.token}`
 
-      if (response.status === 200) {
-        axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`
+      // Tambahkan data pengguna ke cookie
+      const stringify = JSON.stringify(response.data.data)
+      const base64 = btoa(stringify)
+      Cookies.set('__u', base64, { path: '/', expires: 1 }) // Cookie berlaku selama 7 hari
+      Cookies.set('__sid', response.data?.token, { path: '/', expires: 1 }) // Cookie berlaku selama 7 hari
 
-        // Tambahkan data pengguna ke cookie
-        const stringify = JSON.stringify(data[0])
-        const base64 = btoa(stringify)
-        Cookies.set('user', base64, { path: '/' }) // Cookie berlaku selama 7 hari
-        Cookies.set('token', response.data.token, { path: '/' }) // Cookie berlaku selama 7 hari
-
-        set({ data: data, is_Loading: false, is_SoftLoading: false })
-      } else {
-        set({ is_Error: true, message: response.data.message, is_Loading: false, is_SoftLoading: false })
-      }
+      set({
+        data: [response.data.data],
+        message: response.data.message,
+        token: response.data.token
+      })
+      return response // Mengembalikan respons dari panggilan API
     } catch (error) {
-      set({ is_Error: true, message: error.message, is_Loading: false, is_SoftLoading: false })
+      console.error('Terjadi kesalahan:', error)
+      set({ is_Error: true, is_Loading: false, is_SoftLoading: false, message: error.response.data.message })
+      return error // Melemparkan kembali kesalahan untuk ditangani di luar fungsi
     }
   },
 
   // Fungsi untuk melakukan logout
   logout: async () => {
-    set({ is_Loading: true, is_SoftLoading: true })
     try {
-      // Lakukan proses logout di sini, seperti menghapus token atau membersihkan sesi
-      // Misalnya:
+      set({ is_Loading: true, is_SoftLoading: true })
+      const { token } = useAuth.getState()
+      const response = await axiosInstance.post('/api/auth/logout', {
+        sessionid: token // Menggunakan state.token langsung tanpa menggunakan set
+      })
       delete axiosInstance.defaults.headers.common['Authorization']
-      // Hapus cookie pengguna
-      Cookies.remove('user')
-      Cookies.remove('token')
-      // Reset state data
-      set({ data: [], message: '', is_Error: false, is_Loading: false, is_SoftLoading: false })
+      Cookies.remove('__u')
+      Cookies.remove('__sid')
+      set({
+        data: [],
+        message: '',
+        is_Error: false,
+        is_Loading: false,
+        is_SoftLoading: false,
+        token: ''
+      })
+      return response
     } catch (error) {
-      set({ is_Error: true, message: error.message, is_Loading: false, is_SoftLoading: false })
+      console.error('Terjadi kesalahan:', error)
+      set({ is_Error: true, message: error.response.data.message, is_Loading: false, is_SoftLoading: false })
+      return error // Melemparkan kembali kesalahan untuk ditangani di luar fungsi
     }
   }
 }))

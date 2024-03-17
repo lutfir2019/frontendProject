@@ -17,6 +17,8 @@ import { useRouter } from 'next/router'
 import useCart from 'src/@core/hooks/stores/cart/useCart'
 import useShop from 'src/@core/hooks/stores/shop/shop'
 import useAuth from 'src/@core/hooks/stores/auth'
+import ConfirmDelete from '../dialogs/ConfirmDelete'
+import useAlert from 'src/@core/hooks/stores/alert'
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -45,21 +47,39 @@ const TableShop = () => {
   const cartStore = useCart()
   const shopStore = useShop()
   const authStore = useAuth()
+  const alertStore = useAlert()
 
   useEffect(() => {
     setRows(shopStore.data)
-  }, [shopStore])
+  }, [shopStore.data])
 
   useEffect(() => {
     if (!router.query?.s) {
       shopStore.getData()
       return
     }
-    const time = setTimeout(() => {
-      shopStore.getData({ tknm: router.query?.s })
-    }, 500)
-    return () => clearTimeout(time)
+    shopStore.getData({ spnm: router.query?.s })
   }, [router.query])
+
+  const handleDeleteShop = value => async event => {
+    if (!event) return
+
+    const ress = await shopStore.deleteData(value)
+    if (ress.status == 200) {
+      alertStore.setAlert({
+        type: 'success',
+        message: ress.data?.message,
+        is_Active: true
+      })
+      userStore.getData()
+    } else {
+      alertStore.setAlert({
+        type: 'error',
+        message: ress?.response?.data?.message,
+        is_Active: true
+      })
+    }
+  }
 
   return (
     <Card>
@@ -108,8 +128,8 @@ const TableShop = () => {
           <TableBody>
             {rows?.length ? (
               rows?.map(row => (
-                <StyledTableRow key={row.tkcd}>
-                  <Link href={`/shop/add-edit/${row.tkcd}`}>
+                <StyledTableRow key={row.spcd}>
+                  <Link href={`/shop/add-edit/${row.spcd}`}>
                     <StyledTableCell
                       component='th'
                       scope='row'
@@ -122,22 +142,14 @@ const TableShop = () => {
                         transition: 'ease-in-out 0.1s'
                       }}
                     >
-                      <h4 style={{ margin: '0px' }}>{row.tknm}</h4>
+                      <h4 style={{ margin: '0px' }}>{row.spnm}</h4>
                     </StyledTableCell>
                   </Link>
-                  <StyledTableCell align='center'>{row.tkcd}</StyledTableCell>
+                  <StyledTableCell align='center'>{row.spcd}</StyledTableCell>
                   <StyledTableCell>{row.almt}</StyledTableCell>
                   {authStore.data[0]?.rlcd === 'ROLE-1' && (
                     <StyledTableCell align='center'>
-                      <Button
-                        type='button'
-                        onClick={() => cartStore.addData(row)}
-                        sx={{ padding: 0 }}
-                        variant='contained'
-                        color='error'
-                      >
-                        <span style={{ color: 'whitesmoke', textTransform: 'none' }}>Hapus</span>
-                      </Button>
+                      <ConfirmDelete handleValue={handleDeleteShop(row)} />
                     </StyledTableCell>
                   )}
                 </StyledTableRow>

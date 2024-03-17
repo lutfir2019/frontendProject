@@ -14,9 +14,11 @@ import TableCell, { tableCellClasses } from '@mui/material/TableCell'
 import { Plus } from 'mdi-material-ui'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
-import useCart from 'src/@core/hooks/stores/cart/useCart'
 import useUser from 'src/@core/hooks/stores/user/user'
 import useAuth from 'src/@core/hooks/stores/auth'
+import useAlert from 'src/@core/hooks/stores/alert'
+import ConfirmDelete from '../dialogs/ConfirmDelete'
+import useShop from 'src/@core/hooks/stores/shop/shop'
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -39,27 +41,26 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   }
 }))
 
-const createData = (tkcd, tknm) => {
-  return { tkcd, tknm }
-}
-
-const rows_toko = [
-  createData('LWG001', 'Toko Lawang'),
-  createData('LWG002', 'Lawang Indah'),
-  createData('DCI001', 'Distro Satu')
-]
-
 const TableUser = () => {
   const [filter, setFilter] = useState('')
   const [rows, setRows] = useState([])
+  const [shop_list, setShipList] = useState([
+    {
+      spcd: '',
+      spnm: ''
+    }
+  ])
+
   const router = useRouter()
-  const cartStore = useCart()
   const userStore = useUser()
+  const alertStore = useAlert()
   const authStore = useAuth()
+  const shopStore = useShop()
 
   useEffect(() => {
-    setRows(userStore.data)
-  }, [userStore])
+    setRows(userStore?.data)
+    setShipList(shopStore?.data)
+  }, [userStore?.data, shopStore?.data])
 
   useEffect(() => {
     if (!router.query?.s) {
@@ -68,24 +69,38 @@ const TableUser = () => {
       return
     }
 
-    const time = setTimeout(() => {
-      userStore.getData({ nam: router.query?.s })
-    }, 500)
-    return () => clearTimeout(time)
+    userStore.getData({ nam: router.query?.s, page: 1 })
   }, [router.query])
 
   const filterFunc = values => {
-    const { tkcd } = values
-    setFilter(tkcd)
+    const { spcd } = values
+    setFilter(spcd)
 
-    const time = setTimeout(() => {
-      if (tkcd == '-') {
-        userStore.getData()
-        return
-      }
-      userStore.getData({ tkcd: tkcd })
-    }, 500)
-    return () => clearTimeout(time)
+    if (spcd == '-') {
+      userStore.getData()
+      return
+    }
+    userStore.getData({ spcd: spcd, page: 1 })
+  }
+
+  const handleDeleteUser = value => async consfirm => {
+    if (!consfirm || authStore?.data[0]?.unm == value?.unm) return
+
+    const ress = await userStore.deleteData(value)
+    if (ress.status == 200) {
+      alertStore.setAlert({
+        type: 'success',
+        message: ress.data?.message,
+        is_Active: true
+      })
+      userStore.getData()
+    } else {
+      alertStore.setAlert({
+        type: 'error',
+        message: ress?.response?.data?.message,
+        is_Active: true
+      })
+    }
   }
 
   return (
@@ -105,11 +120,11 @@ const TableUser = () => {
         {authStore.data[0]?.rlcd == 'ROLE-1' && (
           <FormControl variant='standard' sx={{ mx: 4, mb: 3, minWidth: 120 }}>
             <InputLabel>Toko</InputLabel>
-            <Select label='Toko' name='tkcd' value={filter} onChange={e => filterFunc({ tkcd: e.target.value })}>
+            <Select label='Toko' name='spcd' value={filter} onChange={e => filterFunc({ spcd: e.target.value })}>
               <MenuItem value='-'>All</MenuItem>
-              {rows_toko.map(row => (
-                <MenuItem value={row.tkcd} key={row.tkcd}>
-                  {row.tknm}
+              {shop_list?.map(row => (
+                <MenuItem value={row.spcd} key={row.spcd}>
+                  {row.spnm}
                 </MenuItem>
               ))}
             </Select>
@@ -148,8 +163,8 @@ const TableUser = () => {
           <TableBody>
             {rows?.length ? (
               rows.map(row => (
-                <StyledTableRow key={row.uid}>
-                  <Link href={`/users/add-edit/${row.uid}`}>
+                <StyledTableRow key={row.unm}>
+                  <Link href={`/users/add-edit/${row.unm}`}>
                     <StyledTableCell
                       component='th'
                       scope='row'
@@ -165,7 +180,7 @@ const TableUser = () => {
                       <h4 style={{ margin: '0px' }}>{row.nam}</h4>
                     </StyledTableCell>
                   </Link>
-                  <StyledTableCell align='center'>{row.tknm}</StyledTableCell>
+                  <StyledTableCell align='center'>{row.spnm}</StyledTableCell>
                   <StyledTableCell align='center'>
                     <Chip
                       label={row.rlnm}
@@ -180,15 +195,7 @@ const TableUser = () => {
                   </StyledTableCell>
                   {authStore.data[0]?.rlcd === 'ROLE-1' && (
                     <StyledTableCell align='center'>
-                      <Button
-                        type='button'
-                        onClick={() => cartStore.addData(row)}
-                        sx={{ padding: 0 }}
-                        variant='contained'
-                        color='error'
-                      >
-                        <span style={{ color: 'whitesmoke', textTransform: 'none' }}>Hapus</span>
-                      </Button>
+                      <ConfirmDelete handleValue={handleDeleteUser(row)} />
                     </StyledTableCell>
                   )}
                 </StyledTableRow>

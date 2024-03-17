@@ -20,18 +20,8 @@ import { Typography } from '@mui/material'
 import useAlert from 'src/@core/hooks/stores/alert'
 import useAuth from 'src/@core/hooks/stores/auth'
 import useUser from 'src/@core/hooks/stores/user/user'
-
-const createData = (tkcd, tknm) => {
-  return { tkcd, tknm }
-}
-
-const tkcd = 'LWG001'
-
-const rows_toko = [
-  createData('LWG001', 'Toko Lawang'),
-  createData('LWG002', 'Lawang Indah'),
-  createData('DCI001', 'Distro Satu')
-]
+import useShop from 'src/@core/hooks/stores/shop/shop'
+import PasswordField from '../password/password'
 
 const rows_role = [
   {
@@ -53,29 +43,41 @@ const TabAccount = () => {
   const userStore = useUser()
   const router = useRouter()
   const authStore = useAuth()
-  const { UID } = router.query
+  const shopStore = useShop()
+  const { UNM } = router.query
   const alertStore = useAlert()
   const [passwordsMatch, setPasswordsMatch] = useState(true)
   const [values, setValue] = useState({
-    unam: '',
+    unm: '',
     nam: '',
     rlcd: 'ROLE-3',
-    rlnm: '',
-    tkcd: tkcd,
-    tknm: '',
+    rlnm: 'Karyawan',
+    spcd: '',
+    spnm: '',
     pass: '',
     confirmpass: ''
   })
+  const [shop_list, setShop] = useState([
+    {
+      spcd: '',
+      spnm: ''
+    }
+  ])
+  const [checklenpass, setCheckLen] = useState(false)
+  const [pathUnm, setPath] = useState(false)
 
   useEffect(() => {
-    if (UID == '-') return
-    setValue({ ...userStore.data[0] })
-  }, [userStore, UID])
+    setPath(UNM == '-')
+    setShop(shopStore?.data)
+    setValue({ ...values, spcd: authStore.data[0]?.spcd, spnm: authStore.data[0]?.spnm })
+    if (UNM == '-') return
+    setValue({ ...userStore?.data })
+  }, [userStore.data, UNM, shopStore.data])
 
   const handleChange = event => {
     const { name, value } = event.target
     const selectedRlnm = rows_role?.find(({ rlcd }) => rlcd == value)
-    const selectedTknm = rows_toko?.find(({ tkcd }) => tkcd == value)
+    const selectedTknm = shop_list?.find(({ spcd }) => spcd == value)
 
     setValue({ ...values, [name]: value })
 
@@ -83,8 +85,8 @@ const TabAccount = () => {
       const { rlnm } = selectedRlnm
       setValue({ ...values, rlcd: value, rlnm: rlnm })
     } else if (selectedTknm) {
-      const { tknm } = selectedTknm
-      setValue({ ...values, tkcd: value, tknm: tknm })
+      const { spnm } = selectedTknm
+      setValue({ ...values, spcd: value, spnm: spnm })
     }
 
     if (name === 'pass') setPasswordsMatch(value === values.confirmpass)
@@ -96,64 +98,74 @@ const TabAccount = () => {
     setPasswordsMatch(value === values.pass)
   }
 
-  const onSubmit = event => {
-    event.preventDefault()
-    if (!passwordsMatch) return
-    // router.push('/users')
-    // if(!values.unam){
-    console.log(values)
-    // }
-    alertStore.setAlert({
-      type: 'success',
-      message: 'Success add data',
-      is_Active: true
-    })
-    router.push('/users/add-edit/samuel-yunandar/')
+  const onSubmit = async () => {
+    if (pathUnm) {
+      if (values.pass.length < 6) setCheckLen(true)
+      if (!passwordsMatch || values.pass.length < 6) return
+    }
+
+    let ress
+    if (UNM == '-') {
+      ress = await userStore.addData(values)
+    } else {
+      ress = await userStore.updateData(values)
+    }
+    
+    if (ress.status == 200) {
+      alertStore.setAlert({
+        type: 'success',
+        message: ress.data?.message,
+        is_Active: true
+      })
+      router.push(`/users/add-edit/${values?.unm}/`)
+    } else {
+      alertStore.setAlert({
+        type: 'error',
+        message: ress.response?.data?.message,
+        is_Active: true
+      })
+    }
   }
 
   return (
-    <form onSubmit={onSubmit}>
+    <form>
       <CardContent>
         <Grid container spacing={7}>
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
               label='Username'
-              name='unam'
+              name='unm'
               placeholder='johnDoe'
-              value={values.unam}
+              value={values.unm}
               onChange={handleChange}
               required
+              disabled={UNM != '-'}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField fullWidth label='Name' name='nam' value={values.nam} onChange={handleChange} required />
           </Grid>
-          {UID == '-' && (
+          {pathUnm && (
             <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label='Password'
-                name='pass'
-                value={values.pass}
-                onChange={handleChange}
-                required
-              />
+              <PasswordField name='pass' onChange={handleMatchPassword} label='Password' />
+              {checklenpass && (
+                <Typography variant='caption' color='error'>
+                  Password should be at least 6 characters long
+                </Typography>
+              )}
             </Grid>
           )}
-          {UID == '-' && (
+          {pathUnm && (
             <Grid item xs={12} sm={6}>
-              <TextField
-                error={!passwordsMatch}
-                fullWidth
-                label='Confirm Password'
+              <PasswordField
                 name='confirmpass'
-                value={values.confirmpass}
                 onChange={handleMatchPassword}
-                required
+                label='Confirm Password'
+                error={!passwordsMatch}
               />
               {!passwordsMatch && (
-                <Typography variant='body2' color='error'>
+                <Typography variant='caption' color='error'>
                   Passwords do not match.
                 </Typography>
               )}
@@ -183,22 +195,28 @@ const TabAccount = () => {
               <InputLabel>Toko</InputLabel>
               <Select
                 label='Toko'
-                name='tkcd'
-                value={values.tkcd}
+                name='spcd'
+                value={values.spcd}
                 onChange={handleChange}
                 disabled={authStore.data[0]?.rlcd !== 'ROLE-1'}
                 required
               >
-                {rows_toko?.map(row => (
-                  <MenuItem value={row.tkcd} key={row.tkcd}>
-                    {row.tknm}
+                {shop_list?.map(row => (
+                  <MenuItem value={row.spcd} key={row.spcd}>
+                    {row.spnm}
                   </MenuItem>
                 ))}
               </Select>
             </FormControl>
           </Grid>
           <Grid item xs={12}>
-            <LoadingButton variant='contained' sx={{ marginRight: 3.5 }} type='submit'>
+            <LoadingButton
+              variant='contained'
+              sx={{ marginRight: 3.5 }}
+              type='button'
+              onClick={() => onSubmit()}
+              loading={userStore.is_SoftLoading}
+            >
               Save Changes
             </LoadingButton>
             <Link href='/users'>

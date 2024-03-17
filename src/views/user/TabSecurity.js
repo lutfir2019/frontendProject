@@ -23,19 +23,26 @@ import LockOpenOutline from 'mdi-material-ui/LockOpenOutline'
 import { LoadingButton } from '@mui/lab'
 import Link from 'next/link'
 import useAlert from 'src/@core/hooks/stores/alert'
+import { useRouter } from 'next/router'
+import useUser from 'src/@core/hooks/stores/user/user'
 
 const TabSecurity = () => {
+  const router = useRouter()
+  const { UNM } = router.query
   // ** States
   const [values, setValues] = useState({
-    newPassword: '',
-    currentPassword: '',
+    unm: UNM,
+    newPass: '',
+    pass: '',
     showNewPassword: false,
     confirmNewPassword: '',
     showCurrentPassword: false,
     showConfirmNewPassword: false
   })
+  const [checklenpass, setCheckLen] = useState(false)
   const [passwordsMatch, setPasswordsMatch] = useState(true)
   const alertStore = useAlert()
+  const userStore = useUser()
 
   // Handle Current Password
   const handleCurrentPasswordChange = prop => event => {
@@ -67,7 +74,7 @@ const TabSecurity = () => {
   // Handle Confirm New Password
   const handleConfirmNewPasswordChange = prop => event => {
     setValues({ ...values, [prop]: event.target.value })
-    setPasswordsMatch(event.target.value === values.newPassword)
+    setPasswordsMatch(event.target.value === values.newPass)
   }
 
   const handleClickShowConfirmNewPassword = () => {
@@ -78,16 +85,26 @@ const TabSecurity = () => {
     event.preventDefault()
   }
 
-  const onSubmit = event => {
+  const onSubmit = async event => {
     event.preventDefault()
-    if (!passwordsMatch) return
+    setCheckLen(values.newPass?.length < 6)
+    if (!passwordsMatch || values.newPass.length < 6) return
 
-    console.log(values)
-    alertStore.setAlert({
-      type: 'error',
-      message: 'Field add data',
-      is_Active: true
-    })
+    const ress = await userStore.changePassword(values)
+    if (ress.status == 200) {
+      alertStore.setAlert({
+        type: 'success',
+        message: ress.data?.message,
+        is_Active: true
+      })
+      setValues({ newPass: '', pass: '', confirmNewPassword: '' })
+    } else {
+      alertStore.setAlert({
+        type: 'error',
+        message: ress.response?.data?.message,
+        is_Active: true
+      })
+    }
   }
 
   return (
@@ -101,10 +118,10 @@ const TabSecurity = () => {
                   <InputLabel htmlFor='account-settings-current-password'>Current Password</InputLabel>
                   <OutlinedInput
                     label='Current Password'
-                    value={values.currentPassword}
+                    value={values.pass}
                     id='account-settings-current-password'
                     type={values.showCurrentPassword ? 'text' : 'password'}
-                    onChange={handleCurrentPasswordChange('currentPassword')}
+                    onChange={handleCurrentPasswordChange('pass')}
                     required
                     endAdornment={
                       <InputAdornment position='end'>
@@ -127,9 +144,9 @@ const TabSecurity = () => {
                   <InputLabel htmlFor='account-settings-new-password'>New Password</InputLabel>
                   <OutlinedInput
                     label='New Password'
-                    value={values.newPassword}
+                    value={values.newPass}
                     id='account-settings-new-password'
-                    onChange={handleNewPasswordChange('newPassword')}
+                    onChange={handleNewPasswordChange('newPass')}
                     type={values.showNewPassword ? 'text' : 'password'}
                     required
                     endAdornment={
@@ -145,6 +162,11 @@ const TabSecurity = () => {
                       </InputAdornment>
                     }
                   />
+                  {checklenpass && (
+                    <Typography variant='caption' color='error'>
+                      Password should be at least 6 characters long.
+                    </Typography>
+                  )}
                 </FormControl>
               </Grid>
 
@@ -173,7 +195,7 @@ const TabSecurity = () => {
                     }
                   />
                   {!passwordsMatch && (
-                    <Typography variant='body2' color='error'>
+                    <Typography variant='caption' color='error'>
                       Passwords do not match.
                     </Typography>
                   )}
@@ -199,32 +221,6 @@ const TabSecurity = () => {
         <Box sx={{ mt: 1.75, display: 'flex', alignItems: 'center' }}>
           <KeyOutline sx={{ marginRight: 3 }} />
           <Typography variant='h6'>Two-factor authentication</Typography>
-        </Box>
-
-        <Box sx={{ mt: 5.75, display: 'flex', justifyContent: 'center' }}>
-          <Box
-            sx={{
-              maxWidth: 368,
-              display: 'flex',
-              textAlign: 'center',
-              alignItems: 'center',
-              flexDirection: 'column'
-            }}
-          >
-            <Avatar
-              variant='rounded'
-              sx={{ width: 48, height: 48, color: 'common.white', backgroundColor: 'primary.main' }}
-            >
-              <LockOpenOutline sx={{ fontSize: '1.75rem' }} />
-            </Avatar>
-            <Typography sx={{ fontWeight: 600, marginTop: 3.5, marginBottom: 3.5 }}>
-              Two factor authentication is not enabled yet.
-            </Typography>
-            <Typography variant='body2'>
-              Two-factor authentication adds an additional layer of security to your account by requiring more than just
-              a password to log in. Learn more.
-            </Typography>
-          </Box>
         </Box>
 
         <Box sx={{ mt: 11 }}>
