@@ -89,7 +89,7 @@ const useShop = create(set => ({
   updateData: async params => {
     set({ is_Loading: true, is_SoftLoading: true })
     try {
-      const response = await axiosInstance.put(`/api/shops/put-shop/${params?.spcd}`, params)
+      const response = await axiosInstance.put(`/api/shops/put-shop`, params)
       set({
         is_Loading: false,
         is_SoftLoading: false,
@@ -107,7 +107,7 @@ const useShop = create(set => ({
   deleteData: async params => {
     set({ is_Loading: true, is_SoftLoading: true })
     try {
-      const response = await axiosInstance.post(`/api/shops/delete-shop/${params.spcd}`)
+      const response = await axiosInstance.delete(`/api/shops/delete-shop/${params.spcd}`)
       set({
         is_Loading: false,
         is_SoftLoading: false,

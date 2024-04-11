@@ -71,7 +71,7 @@ const TabInfo = () => {
               label='Alamat'
               minRows={2}
               placeholder='Alamat'
-              value={values.almt}
+              value={values?.almt}
               onChange={handleChange('almt')}
             />
           </Grid>
@@ -81,7 +81,7 @@ const TabInfo = () => {
               type='number'
               label='Phone'
               placeholder='081234567890'
-              value={values.pn}
+              value={values?.pn}
               onChange={handleChange('pn')}
             />
           </Grid>
@@ -90,7 +90,7 @@ const TabInfo = () => {
               <FormLabel sx={{ fontSize: '0.875rem' }}>Gender</FormLabel>
               <RadioGroup
                 row
-                value={values.gdr}
+                value={values?.gdr}
                 aria-label='gender'
                 name='user-settings-info-radio'
                 onChange={handleChange('gdr')}

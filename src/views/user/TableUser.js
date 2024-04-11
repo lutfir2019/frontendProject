@@ -59,28 +59,13 @@ const TableUser = () => {
 
   useEffect(() => {
     setRows(userStore?.data)
-    setShipList(shopStore?.data)
+    setShipList([{ spcd: '-', spnm: 'All' }, ...shopStore?.data])
   }, [userStore?.data, shopStore?.data])
-
-  useEffect(() => {
-    if (!router.query?.s) {
-      setFilter('-')
-      userStore.getData()
-      return
-    }
-
-    userStore.getData({ nam: router.query?.s, page: 1 })
-  }, [router.query])
 
   const filterFunc = values => {
     const { spcd } = values
     setFilter(spcd)
-
-    if (spcd == '-') {
-      userStore.getData()
-      return
-    }
-    userStore.getData({ spcd: spcd, page: 1 })
+    router.push({ pathname: router.pathname, query: { ...router.query, ...values } })
   }
 
   const handleDeleteUser = value => async consfirm => {
@@ -121,10 +106,9 @@ const TableUser = () => {
           <FormControl variant='standard' sx={{ mx: 4, mb: 3, minWidth: 120 }}>
             <InputLabel>Toko</InputLabel>
             <Select label='Toko' name='spcd' value={filter} onChange={e => filterFunc({ spcd: e.target.value })}>
-              <MenuItem value='-'>All</MenuItem>
               {shop_list?.map(row => (
-                <MenuItem value={row.spcd} key={row.spcd}>
-                  {row.spnm}
+                <MenuItem value={row?.spcd} key={row?.spcd}>
+                  {row?.spnm}
                 </MenuItem>
               ))}
             </Select>
@@ -163,8 +147,8 @@ const TableUser = () => {
           <TableBody>
             {rows?.length ? (
               rows.map(row => (
-                <StyledTableRow key={row.unm}>
-                  <Link href={`/users/add-edit/${row.unm}`}>
+                <StyledTableRow key={row?.unm}>
+                  <Link href={`/users/add-edit/${row?.unm}`}>
                     <StyledTableCell
                       component='th'
                       scope='row'
@@ -177,13 +161,13 @@ const TableUser = () => {
                         transition: 'ease-in-out 0.1s'
                       }}
                     >
-                      <h4 style={{ margin: '0px' }}>{row.nam}</h4>
+                      <h4 style={{ margin: '0px' }}>{row?.nam}</h4>
                     </StyledTableCell>
                   </Link>
-                  <StyledTableCell align='center'>{row.spnm}</StyledTableCell>
+                  <StyledTableCell align='center'>{row?.spnm}</StyledTableCell>
                   <StyledTableCell align='center'>
                     <Chip
-                      label={row.rlnm}
+                      label={row?.rlnm}
                       color='default'
                       sx={{
                         height: 24,

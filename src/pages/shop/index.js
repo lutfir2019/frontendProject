@@ -18,13 +18,12 @@ const User = () => {
     alertStore.setLoading({ is_Loading: true })
     if (authStore.data[0]?.rlcd != 'ROLE-1') router.replace('/')
     try {
-      await shopStore.getData()
+      await shopStore.getData({ spnm: router.query?.s, page: 1, page_size: 10 })
     } catch (error) {
-      console.error(`Error!`, error)
     } finally {
       alertStore.setLoading({ is_Loading: false })
     }
-  }, [])
+  }, [router.query])
 
   return (
     <Grid container spacing={6}>

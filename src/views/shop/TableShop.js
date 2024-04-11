@@ -13,7 +13,6 @@ import TableContainer from '@mui/material/TableContainer'
 import TableCell, { tableCellClasses } from '@mui/material/TableCell'
 import { Plus } from 'mdi-material-ui'
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/router'
 import useCart from 'src/@core/hooks/stores/cart/useCart'
 import useShop from 'src/@core/hooks/stores/shop/shop'
 import useAuth from 'src/@core/hooks/stores/auth'
@@ -43,8 +42,6 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 const TableShop = () => {
   const [rows, setRows] = useState([])
-  const router = useRouter()
-  const cartStore = useCart()
   const shopStore = useShop()
   const authStore = useAuth()
   const alertStore = useAlert()
@@ -52,14 +49,6 @@ const TableShop = () => {
   useEffect(() => {
     setRows(shopStore.data)
   }, [shopStore.data])
-
-  useEffect(() => {
-    if (!router.query?.s) {
-      shopStore.getData()
-      return
-    }
-    shopStore.getData({ spnm: router.query?.s })
-  }, [router.query])
 
   const handleDeleteShop = value => async event => {
     if (!event) return
@@ -128,8 +117,8 @@ const TableShop = () => {
           <TableBody>
             {rows?.length ? (
               rows?.map(row => (
-                <StyledTableRow key={row.spcd}>
-                  <Link href={`/shop/add-edit/${row.spcd}`}>
+                <StyledTableRow key={row?.spcd}>
+                  <Link href={`/shop/add-edit/${row?.spcd}`}>
                     <StyledTableCell
                       component='th'
                       scope='row'
@@ -142,11 +131,11 @@ const TableShop = () => {
                         transition: 'ease-in-out 0.1s'
                       }}
                     >
-                      <h4 style={{ margin: '0px' }}>{row.spnm}</h4>
+                      <h4 style={{ margin: '0px' }}>{row?.spnm}</h4>
                     </StyledTableCell>
                   </Link>
-                  <StyledTableCell align='center'>{row.spcd}</StyledTableCell>
-                  <StyledTableCell>{row.almt}</StyledTableCell>
+                  <StyledTableCell align='center'>{row?.spcd}</StyledTableCell>
+                  <StyledTableCell>{row?.almt}</StyledTableCell>
                   {authStore.data[0]?.rlcd === 'ROLE-1' && (
                     <StyledTableCell align='center'>
                       <ConfirmDelete handleValue={handleDeleteShop(row)} />
@@ -155,7 +144,7 @@ const TableShop = () => {
                 </StyledTableRow>
               ))
             ) : (
-              <StyledTableRow>
+              <StyledTableRow aria-rowspan={3}>
                 <StyledTableCell>
                   <h3>Not Found Data</h3>
                 </StyledTableCell>

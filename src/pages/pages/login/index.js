@@ -97,14 +97,15 @@ const LoginPage = () => {
   const onSubmit = async e => {
     e.preventDefault()
     try {
-      await authStore.login(values).then(() => {
+      const ress = await authStore.login(values)
+      if (ress.status == 200) {
         alertStore.setAlert({
           type: 'success',
-          message: 'Logged in successfully',
+          message: ress.data?.message,
           is_Active: true
         })
         router.push('/')
-      })
+      }
     } catch (error) {
       console.error(error)
     }
@@ -231,8 +232,7 @@ const LoginPage = () => {
             </FormControl>
             <Box
               sx={{ mb: 10, display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'space-between' }}
-            >
-            </Box>
+            ></Box>
             <LoadingButton
               fullWidth
               type='submit'

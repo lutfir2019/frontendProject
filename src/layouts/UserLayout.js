@@ -14,7 +14,6 @@ import VerticalAppBarContent from './components/vertical/AppBarContent'
 // ** Hook Import
 import { useSettings } from 'src/@core/hooks/useSettings'
 import CustomAlert from 'src/views/alert/CustomAlert'
-import auth from 'src/@core/utils/auth'
 import LoadingFull from 'src/views/loading/LoadingFull'
 
 const UserLayout = ({ children }) => {
@@ -55,4 +54,4 @@ const UserLayout = ({ children }) => {
   )
 }
 
-export default auth(UserLayout)
+export default UserLayout

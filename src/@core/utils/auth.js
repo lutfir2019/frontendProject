@@ -1,29 +1,21 @@
-'use client'
-import { useRouter } from 'next/router';
-import { useEffect } from 'react';
+import { useRouter } from 'next/router'
+import { useEffect } from 'react'
 import Cookies from 'js-cookie'
+import useAuth from '../hooks/stores/auth'
 
-const auth = (WrappedComponent) => {
-  const Wrapper = (props) => {
-    const router = useRouter();
-    const token = Cookies.get('__sid')
-    
-    useEffect(() => {
-      // Check if the user is not logged in, redirect to login page
-      if (!token) {
-        router.replace('/pages/login');
-      }
-    }, [token, router]);
+const Auth = ({ children }) => {
+  const router = useRouter()
+  const authStore = useAuth()
+  const token = Cookies.get('__sid') || authStore.token
 
-    return <WrappedComponent {...props} />;
-  };
+  useEffect(() => {
+    // Check if the user is not logged in, redirect to login page
+    if (router.pathname != '/pages/login' && !token) {
+      router.push('/pages/login')
+    }
+  }, [token, router])
 
-  // Copy static methods
-  if (WrappedComponent.getInitialProps) {
-    Wrapper.getInitialProps = WrappedComponent.getInitialProps;
-  }
+  return <>{children}</>
+}
 
-  return Wrapper;
-};
-
-export default auth;
+export default Auth

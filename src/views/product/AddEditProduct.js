@@ -18,6 +18,7 @@ import { LoadingButton } from '@mui/lab'
 import useProduct from 'src/@core/hooks/stores/product/product'
 import useAuth from 'src/@core/hooks/stores/auth'
 import useAlert from 'src/@core/hooks/stores/alert'
+import useShop from 'src/@core/hooks/stores/shop/shop'
 
 const CustomInput = forwardRef((props, ref) => {
   return <TextField fullWidth {...props} inputRef={ref} label='Tanggal Pembelian' autoComplete='off' />
@@ -64,39 +65,48 @@ const AddEditProduct = () => {
   const productStore = useProduct()
   const authStore = useAuth()
   const alertStore = useAlert()
+  const shopStore = useShop()
 
-  const [isDisableField, setDisableField] = useState(true)
+  const [isDisableField, setIsDisableField] = useState(true)
   const [productList, setProductList] = useState([
     {
       catcd: 'pkn',
-      catnm: '',
+      catnm: 'Pakaian',
       pnm: '',
       pcd: '',
       price: 0,
       crby: date,
       qty: 0,
-      spcd: 'OGT',
-      spnm: 'Toko Lawang'
+      spcd: authStore?.data[0]?.spcd,
+      spnm: authStore?.data[0]?.spnm
+    }
+  ])
+  const [shop_list, setShop_list] = useState([
+    {
+      spcd: '',
+      spnm: ''
     }
   ])
 
   useEffect(() => {
     if (!['ROLE-1', 'ROLE-2']?.includes(authStore.data[0]?.rlcd)) {
-      setDisableField(true)
+      setIsDisableField(true)
     } else {
-      setDisableField(false)
+      setIsDisableField(false)
     }
   }, [authStore.data[0]?.rlcd])
 
   useEffect(() => {
+    setShop_list(shopStore?.data)
     if (PCD == '-') return
-    setProductList([...productStore?.data])
-  }, [productStore])
+    setProductList([{ ...productStore?.data, crby: Date.parse(productStore?.data?.crby) }])
+  }, [productStore?.data, shopStore?.data])
 
   const handleChange = (event, index) => {
     const { name, value } = event.target
     const updatedProductList = [...productList]
     const selectedCatnm = listCatnm?.find(({ catcd }) => catcd == value)
+    const selectedShop = shop_list?.find(({ spcd }) => spcd == value)
     updatedProductList[index][name] = value
 
     if (selectedCatnm) {
@@ -105,7 +115,20 @@ const AddEditProduct = () => {
         ...updatedProductList[index],
         catnm: catnm
       }
+    } else if (selectedShop) {
+      const { spnm } = selectedShop
+      updatedProductList[index] = {
+        ...updatedProductList[index],
+        spnm: spnm
+      }
     }
+    setProductList(updatedProductList)
+  }
+
+  const handleNumber = (event, index) => {
+    const { name, value } = event.target
+    const updatedProductList = [...productList]
+    updatedProductList[index][name] = parseInt(value)
     setProductList(updatedProductList)
   }
 
@@ -119,24 +142,30 @@ const AddEditProduct = () => {
         pcd: '',
         price: 0,
         crby: date,
-        qty: 0
+        qty: 0,
+        spcd: authStore?.data[0]?.spcd,
+        spnm: authStore?.data[0]?.spnm
       }
     ])
   }
 
-  const handleDeleteProduct = index => {
+  const handleDeleteProduct = async index => {
     const updatedProductList = [...productList]
+    const deleteProduct = productList[index]
     updatedProductList.splice(index, 1)
     setProductList(updatedProductList)
+    if (PCD == '-') {
+      const ress = await productStore.deleteData(deleteProduct)
+    }
   }
 
   const onSubmit = async event => {
     event.preventDefault()
     let ress
     if (PCD == '-') {
-      ress = await productStore.addData(productList)
+      ress = await productStore.addData({ data: [...productList] })
     } else {
-      ress = await productStore.updateData({ productList })
+      ress = await productStore.updateData({ ...productList[0], crby: new Date(productList[0]?.crby) })
     }
 
     if (ress.status == 200) {
@@ -145,6 +174,7 @@ const AddEditProduct = () => {
         message: ress.data?.message,
         is_Active: true
       })
+      router.push('/product')
     } else {
       alertStore.setAlert({
         type: 'error',
@@ -156,31 +186,29 @@ const AddEditProduct = () => {
 
   return (
     <form onSubmit={onSubmit}>
-      {productList.map((product, index) => (
-        <CardContent key={index}>
+      {productList?.map((product, index) => (
+        <CardContent key={product?.pcd}>
           <Grid container spacing={5}>
             <Grid item xs={12} sm={6} display={'flex'} gap={5}>
-              <Tooltip title='Kode max. 4 karakter' placement='top-start'>
-                <TextField
-                  fullWidth
-                  name='pcd'
-                  label='Kode Produk'
-                  placeholder='contoh: KSK01'
-                  value={product?.pcd}
-                  onChange={e => handleChange(e, index)}
-                  required
-                  disabled={isDisableField}
-                />
-              </Tooltip>
+              <TextField
+                fullWidth
+                name='pcd'
+                label='Kode Produk'
+                placeholder='contoh: KSK01'
+                value={product?.pcd}
+                onChange={e => handleChange(e, index)}
+                required
+                disabled={isDisableField || PCD != '-'}
+              />
               <TextField
                 fullWidth
                 name='qty'
                 type='number'
                 label='Jumlah Produk'
                 placeholder='contoh: 2'
-                value={product.qty}
+                value={product?.qty}
                 InputProps={{ inputProps: { min: 0 } }}
-                onChange={e => handleChange(e, index)}
+                onChange={e => handleNumber(e, index)}
                 required
                 disabled={isDisableField}
               />
@@ -194,8 +222,8 @@ const AddEditProduct = () => {
                   type='number'
                   placeholder='100000'
                   inputProps={{ min: 0 }}
-                  value={product.price}
-                  onChange={e => handleChange(e, index)}
+                  value={product?.price}
+                  onChange={e => handleNumber(e, index)}
                   required
                   disabled={isDisableField}
                 />
@@ -207,7 +235,7 @@ const AddEditProduct = () => {
                 label='Nama Produk'
                 name='pnm'
                 placeholder='contoh: Kaos Kerah'
-                value={product.pnm}
+                value={product?.pnm}
                 onChange={e => handleChange(e, index)}
                 required
                 disabled={isDisableField}
@@ -216,8 +244,7 @@ const AddEditProduct = () => {
             <Grid item xs={12} sm={6}>
               <DatePickerWrapper>
                 <DatePicker
-                  selected={product.crby}
-                  name='crby'
+                  selected={product?.crby}
                   showYearDropdown
                   showMonthDropdown
                   id='form-add-product'
@@ -237,14 +264,33 @@ const AddEditProduct = () => {
                 <Select
                   label='Category'
                   name='catcd'
-                  value={product.catcd}
+                  value={product?.catcd}
                   onChange={e => handleChange(e, index)}
                   required
                   disabled={isDisableField}
                 >
                   {listCatnm.map(item => (
-                    <MenuItem value={item.catcd} key={item.catcd}>
-                      {item.catnm}
+                    <MenuItem value={item?.catcd} key={item?.catcd}>
+                      {item?.catnm}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth>
+                <InputLabel>Nama Toko</InputLabel>
+                <Select
+                  label='Toko'
+                  name='spcd'
+                  value={product?.spcd}
+                  onChange={e => handleChange(e, index)}
+                  required
+                  disabled={authStore.data[0]?.rlcd != 'ROLE-1'}
+                >
+                  {shop_list?.map(item => (
+                    <MenuItem value={item?.spcd} key={item?.spcd}>
+                      {item?.spnm}
                     </MenuItem>
                   ))}
                 </Select>

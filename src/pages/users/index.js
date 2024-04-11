@@ -8,25 +8,34 @@ import useUser from 'src/@core/hooks/stores/user/user'
 import useAuth from 'src/@core/hooks/stores/auth'
 import useShop from 'src/@core/hooks/stores/shop/shop'
 import useAlert from 'src/@core/hooks/stores/alert'
+import { useRouter } from 'next/router'
 
 const User = () => {
   const userStore = useUser()
   const authStore = useAuth()
   const shopStore = useShop()
+  const router = useRouter()
   const alertStore = useAlert()
 
   checkUserRole(authStore.data[0]?.rlcd)
+
   useEffect(async () => {
-    alertStore.setLoading({is_Loading: true})
+    await shopStore.getData({ page: 1, page_size: 999 })
+  }, [])
+
+  useEffect(async () => {
+    alertStore.setLoading({ is_Loading: true })
     try {
-      await userStore.getData()
-      await shopStore.getData({ page: 1, page_size: 999 })
+      await userStore.getData({
+        nam: router.query?.s,
+        spcd: router.query?.spcd != '-' ? router.query?.spcd : '',
+        page: 1
+      })
     } catch (error) {
-      console.error('Error:', error)
     } finally {
       alertStore.setLoading({ is_Loading: false })
     }
-  }, [])
+  }, [router.query])
 
   return (
     <Grid container spacing={6}>

@@ -17,6 +17,8 @@ import { Button, CardActions, FormControl, InputLabel, MenuItem, Select } from '
 import useAuth from 'src/@core/hooks/stores/auth'
 import useProduct from 'src/@core/hooks/stores/product/product'
 import useCart from 'src/@core/hooks/stores/cart/useCart'
+import { formatRupiah } from 'src/@core/utils/globalFunction'
+import useShop from 'src/@core/hooks/stores/shop/shop'
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -39,59 +41,52 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   }
 }))
 
-const createData = (prnm, qty, price, prcd, catnm, catcd) => {
-  return { prnm, qty, price, prcd, catnm, catcd }
-}
-
-const rows_produk = [
-  createData('Kaos Oblong', 159, 100000, 'KSO01', 'Pakaian', 'pkn'),
-  createData('Celana Jeans', 237, 200000, 'CNJ01', 'Pakaian', 'pkn'),
-  createData('Eiger Tali', 262, 180000, 'EIG01', 'Sendal', 'sdl'),
-  createData('Ortuseight', 305, 300000, 'ORE01', 'Sepatu', 'spt'),
-  createData('Topi All Star', 356, 100000, 'TPA01', 'Topi', 'tpi')
+const categori_list = [
+  {
+    catnm: 'All',
+    catcd: '-'
+  },
+  {
+    catnm: 'Pakaian',
+    catcd: 'pkn'
+  },
+  {
+    catnm: 'Sendal',
+    catcd: 'sdl'
+  },
+  {
+    catnm: 'Sepatu',
+    catcd: 'spt'
+  },
+  {
+    catnm: 'Topi',
+    catcd: 'tpi'
+  }
 ]
 
 const TableProduct = () => {
-  const [filter, setFilter] = useState('')
   const [rows, setRows] = useState([])
   const cartStore = useCart()
   const router = useRouter()
   const productStore = useProduct()
   const authStore = useAuth()
-
-  useEffect(() => {
-    productStore.getData()
-  }, [])
-
-  useEffect(() => {
-    setRows(productStore.data)
-  }, [productStore])
-
-  useEffect(() => {
-    if (!router.query?.s) {
-      setFilter('-')
-      productStore.getData()
-      return
+  const shopStore = useShop()
+  const [filter, setFilter] = useState({ spcd: '', catcd: '' })
+  const [shop_list, setShipList] = useState([
+    {
+      spcd: '',
+      spnm: ''
     }
+  ])
 
-    const time = setTimeout(() => {
-      productStore.getData({ prcd: router.query?.s })
-    }, 500)
-    return () => clearTimeout(time)
-  }, [router.query])
+  useEffect(() => {
+    setRows(productStore?.data)
+    setShipList([{ spcd: '-', spnm: 'All' }, ...shopStore?.data])
+  }, [productStore?.data])
 
-  const filterFunc = values => {
-    const { catcd } = values
-    setFilter(catcd)
-
-    const time = setTimeout(() => {
-      if (catcd == '-') {
-        productStore.getData()
-        return
-      }
-      productStore.getData({ catcd: catcd })
-    }, 500)
-    return () => clearTimeout(time)
+  const filterFunc = async values => {
+    setFilter(values)
+    router.push({ pathname: router.pathname, query: { ...router.query, ...values } })
   }
   return (
     <Card>
@@ -106,12 +101,23 @@ const TableProduct = () => {
           justifyContent: 'space-between' // Tombol akan diatur di tengah secara horizontal
         }}
       >
+        {authStore.data[0]?.rlcd == 'ROLE-1' && (
+          <FormControl variant='standard' sx={{ mx: 4, mb: 3, minWidth: 120 }}>
+            <InputLabel>Toko</InputLabel>
+            <Select label='Toko' name='spcd' value={filter?.spcd} onChange={e => filterFunc({ spcd: e.target.value })}>
+              {shop_list?.map(row => (
+                <MenuItem value={row?.spcd} key={row?.spcd}>
+                  {row?.spnm}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        )}
         <FormControl variant='standard' sx={{ mx: 4, mb: 3, minWidth: 120 }}>
           <InputLabel>Kategori</InputLabel>
-          <Select label='Kategori' name='catcd' value={filter} onChange={e => filterFunc({ catcd: e.target.value })}>
-            <MenuItem value='-'>All</MenuItem>
-            {rows_produk.map((row, index) => (
-              <MenuItem value={row.catcd} key={row.catcd + index}>
+          <Select label='Kategori' value={filter?.catcd} onChange={e => filterFunc({ catcd: e.target.value })}>
+            {categori_list.map((row, index) => (
+              <MenuItem value={row?.catcd} key={row?.catcd + index}>
                 {row.catnm}
               </MenuItem>
             ))}
@@ -153,9 +159,9 @@ const TableProduct = () => {
           </TableHead>
           <TableBody>
             {rows?.length ? (
-              rows?.map(row => (
-                <StyledTableRow key={row.prnm}>
-                  <Link href={`/product/add-edit/${row.prcd}`}>
+              rows?.map((row, index) => (
+                <StyledTableRow key={index}>
+                  <Link href={`/product/add-edit/${row?.pcd}?spcd=${router.query?.spcd}`}>
                     <StyledTableCell
                       component='th'
                       scope='row'
@@ -168,13 +174,13 @@ const TableProduct = () => {
                         transition: 'ease-in-out 0.1s'
                       }}
                     >
-                      <h4 style={{ margin: '0px' }}>{row.prnm}</h4>
+                      <h4 style={{ margin: '0px' }}>{row?.pnm}</h4>
                     </StyledTableCell>
                   </Link>
-                  <StyledTableCell align='center'>{row.qty}</StyledTableCell>
-                  <StyledTableCell align='center'>{row.price}</StyledTableCell>
-                  <StyledTableCell align='center'>{row.prcd}</StyledTableCell>
-                  <StyledTableCell align='center'>{row.catnm}</StyledTableCell>
+                  <StyledTableCell align='center'>{row?.qty}</StyledTableCell>
+                  <StyledTableCell align='left'>{formatRupiah(row?.price)}</StyledTableCell>
+                  <StyledTableCell align='center'>{row?.pcd}</StyledTableCell>
+                  <StyledTableCell align='center'>{row?.catnm}</StyledTableCell>
                   <StyledTableCell align='center'>
                     <Button type='button' onClick={() => cartStore.addData(row)}>
                       <CartPlus />

@@ -101,7 +101,7 @@ const TabAccount = () => {
   const onSubmit = async () => {
     if (pathUnm) {
       if (values.pass.length < 6) setCheckLen(true)
-      if (!passwordsMatch || values.pass.length < 6) return
+      if (!passwordsMatch || values.pass?.length < 6) return
     }
 
     let ress
@@ -137,14 +137,14 @@ const TabAccount = () => {
               label='Username'
               name='unm'
               placeholder='johnDoe'
-              value={values.unm}
+              value={values?.unm}
               onChange={handleChange}
               required
               disabled={UNM != '-'}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField fullWidth label='Name' name='nam' value={values.nam} onChange={handleChange} required />
+            <TextField fullWidth label='Name' name='nam' value={values?.nam} onChange={handleChange} required />
           </Grid>
           {pathUnm && (
             <Grid item xs={12} sm={6}>
@@ -177,14 +177,14 @@ const TabAccount = () => {
               <Select
                 label='Role'
                 name='rlcd'
-                value={values.rlcd}
+                value={values?.rlcd}
                 onChange={handleChange}
                 disabled={authStore.data[0]?.rlcd !== 'ROLE-1'}
                 required
               >
                 {rows_role?.map(row => (
                   <MenuItem value={row?.rlcd} key={row?.rlcd}>
-                    {row.rlnm}
+                    {row?.rlnm}
                   </MenuItem>
                 ))}
               </Select>
@@ -196,14 +196,14 @@ const TabAccount = () => {
               <Select
                 label='Toko'
                 name='spcd'
-                value={values.spcd}
+                value={values?.spcd}
                 onChange={handleChange}
                 disabled={authStore.data[0]?.rlcd !== 'ROLE-1'}
                 required
               >
                 {shop_list?.map(row => (
-                  <MenuItem value={row.spcd} key={row.spcd}>
-                    {row.spnm}
+                  <MenuItem value={row?.spcd} key={row?.spcd}>
+                    {row?.spnm}
                   </MenuItem>
                 ))}
               </Select>
@@ -215,7 +215,7 @@ const TabAccount = () => {
               sx={{ marginRight: 3.5 }}
               type='button'
               onClick={() => onSubmit()}
-              loading={userStore.is_SoftLoading}
+              loading={userStore?.is_SoftLoading}
             >
               Save Changes
             </LoadingButton>

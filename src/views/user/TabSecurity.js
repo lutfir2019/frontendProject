@@ -1,10 +1,9 @@
 // ** React Imports
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
-import Avatar from '@mui/material/Avatar'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import InputLabel from '@mui/material/InputLabel'
@@ -19,7 +18,6 @@ import InputAdornment from '@mui/material/InputAdornment'
 import EyeOutline from 'mdi-material-ui/EyeOutline'
 import KeyOutline from 'mdi-material-ui/KeyOutline'
 import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
-import LockOpenOutline from 'mdi-material-ui/LockOpenOutline'
 import { LoadingButton } from '@mui/lab'
 import Link from 'next/link'
 import useAlert from 'src/@core/hooks/stores/alert'
@@ -34,6 +32,7 @@ const TabSecurity = () => {
     unm: UNM,
     newPass: '',
     pass: '',
+    spcd: '',
     showNewPassword: false,
     confirmNewPassword: '',
     showCurrentPassword: false,
@@ -85,6 +84,11 @@ const TabSecurity = () => {
     event.preventDefault()
   }
 
+  useEffect(() => {
+    if (UNM == '-') return
+    setValues({ ...userStore?.data })
+  }, [userStore.data])
+
   const onSubmit = async event => {
     event.preventDefault()
     setCheckLen(values.newPass?.length < 6)
@@ -120,7 +124,7 @@ const TabSecurity = () => {
                     label='Current Password'
                     value={values.pass}
                     id='account-settings-current-password'
-                    type={values.showCurrentPassword ? 'text' : 'password'}
+                    type={values?.showCurrentPassword ? 'text' : 'password'}
                     onChange={handleCurrentPasswordChange('pass')}
                     required
                     endAdornment={
@@ -131,7 +135,7 @@ const TabSecurity = () => {
                           onClick={handleClickShowCurrentPassword}
                           onMouseDown={handleMouseDownCurrentPassword}
                         >
-                          {values.showCurrentPassword ? <EyeOutline /> : <EyeOffOutline />}
+                          {values?.showCurrentPassword ? <EyeOutline /> : <EyeOffOutline />}
                         </IconButton>
                       </InputAdornment>
                     }
@@ -144,10 +148,10 @@ const TabSecurity = () => {
                   <InputLabel htmlFor='account-settings-new-password'>New Password</InputLabel>
                   <OutlinedInput
                     label='New Password'
-                    value={values.newPass}
+                    value={values?.newPass}
                     id='account-settings-new-password'
                     onChange={handleNewPasswordChange('newPass')}
-                    type={values.showNewPassword ? 'text' : 'password'}
+                    type={values?.showNewPassword ? 'text' : 'password'}
                     required
                     endAdornment={
                       <InputAdornment position='end'>
@@ -157,7 +161,7 @@ const TabSecurity = () => {
                           aria-label='toggle password visibility'
                           onMouseDown={handleMouseDownNewPassword}
                         >
-                          {values.showNewPassword ? <EyeOutline /> : <EyeOffOutline />}
+                          {values?.showNewPassword ? <EyeOutline /> : <EyeOffOutline />}
                         </IconButton>
                       </InputAdornment>
                     }
@@ -176,9 +180,9 @@ const TabSecurity = () => {
                   <OutlinedInput
                     error={!passwordsMatch}
                     label='Confirm New Password'
-                    value={values.confirmNewPassword}
+                    value={values?.confirmNewPassword}
                     id='account-settings-confirm-new-password'
-                    type={values.showConfirmNewPassword ? 'text' : 'password'}
+                    type={values?.showConfirmNewPassword ? 'text' : 'password'}
                     onChange={handleConfirmNewPasswordChange('confirmNewPassword')}
                     required
                     endAdornment={
@@ -189,7 +193,7 @@ const TabSecurity = () => {
                           onClick={handleClickShowConfirmNewPassword}
                           onMouseDown={handleMouseDownConfirmNewPassword}
                         >
-                          {values.showConfirmNewPassword ? <EyeOutline /> : <EyeOffOutline />}
+                          {values?.showConfirmNewPassword ? <EyeOutline /> : <EyeOffOutline />}
                         </IconButton>
                       </InputAdornment>
                     }

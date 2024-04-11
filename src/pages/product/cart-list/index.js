@@ -62,7 +62,7 @@ const CartList = () => {
     // Mengecek apakah prcd sudah ada sebelum menambahkan data
    
     const prcdExists = cart_list?.some(
-      cartItem => cartItem?.catnm === item?.catnm && cartItem?.items?.some(i => i?.prcd === item?.prcd)
+      cartItem => cartItem?.catnm === item?.catnm && cartItem?.items?.some(i => i?.pcd === item?.pcd)
     )
 
     if (existingCategoryIndex === -1) {
@@ -79,10 +79,10 @@ const CartList = () => {
     }
 
     // Menghitung jumlah kemunculan setiap nilai 'prcd'
-    if (!count_product[item?.prcd]) {
-      count_product[item?.prcd] = 1
+    if (!count_product[item?.pcd]) {
+      count_product[item?.pcd] = 1
     } else {
-      count_product[item?.prcd]++
+      count_product[item?.pcd]++
     }
     total_price += item?.price
   })
@@ -90,7 +90,7 @@ const CartList = () => {
   const onSubmit = event => {
     event.preventDefault()
 
-    if (total_price < 1) {
+    if (cart_list?.length < 1) {
       alertStore.setAlert({
         type: 'error',
         message: 'Tidak ada produk yang di pilih',
@@ -107,7 +107,7 @@ const CartList = () => {
     // count_product = total produk quentity produk yang di beli dengan code yang sama
     const updatedItems = cart_list.flatMap(cart => {
       return cart.items.map(item => {
-        const newQt = { qty: item.qty - count_product[item.prcd], qtby: count_product[item.prcd] }
+        const newQt = { qty: item.qty - count_product[item.pcd], qtby: count_product[item.pcd] }
         
         return { ...item, ...newQt }
       })
@@ -150,20 +150,20 @@ const CartList = () => {
                 </TableRow>
                 {row.items?.length
                   ? row.items.map(item => (
-                      <TableRow key={item?.prcd}>
-                        <TableCell sx={{ border: 'none' }}>{item?.prnm}</TableCell>
-                        <TableCell sx={{ border: 'none', textAlign: 'center' }}>{item?.prcd}</TableCell>
+                      <TableRow key={item?.pcd}>
+                        <TableCell sx={{ border: 'none' }}>{item?.pnm}</TableCell>
+                        <TableCell sx={{ border: 'none', textAlign: 'center' }}>{item?.pcd}</TableCell>
                         <TableCell sx={{ border: 'none', textAlign: 'center' }}>
-                          {item?.qty - count_product[item?.prcd]}
+                          {item?.qty - count_product[item?.pcd]}
                         </TableCell>
                         <TableCell sx={{ border: 'none', textAlign: 'center' }}>{formatRupiah(item?.price)}</TableCell>
                         <CellTabelButton>
                           <ButtonClick onClick={() => deleteData({ ...item, index: item?.index })}>
                             <Minus fontSize='small' />
                           </ButtonClick>
-                          <span style={{ position: 'absolute' }}>{count_product[item?.prcd]}</span>
+                          <span style={{ position: 'absolute' }}>{count_product[item?.pcd]}</span>
                           <ButtonClick
-                            disabled={item?.qty - count_product[item?.prcd] < 1}
+                            disabled={item?.qty - count_product[item?.pcd] < 1}
                             onClick={() => addData(item)}
                           >
                             <Plus fontSize='small' />
@@ -204,7 +204,7 @@ const CartList = () => {
         <Grid container display='flex' gap={2} justifyContent={'space-between'} alignContent={'center'} padding={5}>
           <Grid item display={'flex'}>
             <Typography variant='body2' color={'red'}>
-              *Check kembali sebelum melakukan pembayaran
+              *Cek kembali sebelum melakukan pembayaran
             </Typography>
           </Grid>
           <Grid item>

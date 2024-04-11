@@ -37,10 +37,7 @@ const AppBarContent = props => {
     const queryParams = { ...router.query, ...filter_value }
 
     // Menggunakan setTimeout untuk menunggu sebelum melakukan navigasi
-    clearTimeout(timer)
-    const timer = setTimeout(() => {
-      router.push({ pathname: router.pathname, query: queryParams })
-    }, 1000)
+    router.push({ pathname: router.pathname, query: queryParams })
   }
 
   return (

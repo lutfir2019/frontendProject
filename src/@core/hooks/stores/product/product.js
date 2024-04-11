@@ -12,35 +12,65 @@ const useProduct = create(set => ({
   total_page: 1,
   count_item: 0,
 
-  // Fungsi untuk mengambil data produk berdasarkan parameter
   getData: async params => {
     set({ is_Loading: true, is_SoftLoading: true })
-    // Simulasi pengambilan data
-    const date = new Date()
-    let rows_produk = [
-      createData('Kaos Oblong', 159, 100000, 'KSO01', 'Pakaian', 'pkn', date, 'LWG001'),
-      createData('Celana Jeans', 237, 200000, 'CNJ01', 'Pakaian', 'pkn', date, 'LWG001'),
-      createData('Eiger Tali', 262, 180000, 'EIG01', 'Sendal', 'sdl', date, 'LWG001'),
-      createData('Ortuseight', 305, 300000, 'ORE01', 'Sepatu', 'spt', date, 'LWG001'),
-      createData('Topi All Star', 356, 100000, 'TPA01', 'Topi', 'tpi', date, 'LWG001')
-    ]
-
-    // Lakukan filter hanya ketika terdapat params
-    if (params?.prcd) {
-      rows_produk = rows_produk.filter(({ prcd }) => prcd === params.prcd)
-    } else if (params?.catcd) {
-      rows_produk = rows_produk.filter(({ catcd }) => catcd === params.catcd)
+    const { page, page_size } = useProduct.getState()
+    try {
+      const response = await axiosInstance.post('/api/products/get-product', {
+        page: page,
+        page_size: page_size,
+        ...params
+      })
+      set({
+        data: response.data?.data?.data,
+        is_Loading: false,
+        is_SoftLoading: false,
+        is_Error: false,
+        message: response.data?.message,
+        page: response.data?.data?.pagination?.currentPage,
+        page_size: response.data?.data?.pagination?.perPage,
+        total_page: response.data?.data?.pagination?.totalPages,
+        count_item: response.data?.data?.pagination?.totalItems
+      })
+      return response
+    } catch (error) {
+      console.error('Terjadi kesalahan:', error)
+      set({ is_Error: true, message: error.response?.data.message, is_Loading: false, is_SoftLoading: false })
+      return error
     }
-
-    // Mengatur state data dengan data yang diperoleh
-    set({ data: rows_produk, is_Loading: false, is_SoftLoading: false })
   },
 
-  // Fungsi untuk menambahkan data ke state
+  getDetails: async params => {
+    set({ is_Loading: true, is_SoftLoading: true })
+    const { page, page_size } = useProduct.getState()
+    try {
+      const response = await axiosInstance.post(`/api/products/get-product/${params?.pcd}`, {
+        ...params,
+        page: page,
+        page_size: page_size
+      })
+      set({
+        data: response.data?.data?.data,
+        is_Loading: false,
+        is_SoftLoading: false,
+        message: response.data?.message,
+        page: response.data?.data?.pagination?.currentPage,
+        page_size: response.data?.data?.pagination?.perPage,
+        total_page: response.data?.data?.pagination?.totalPages,
+        count_item: response.data?.data?.pagination?.totalItems
+      })
+      return response
+    } catch (error) {
+      console.error('Terjadi kesalahan:', error)
+      set({ is_Error: true, message: error.response?.data.message, is_Loading: false, is_SoftLoading: false })
+      return error
+    }
+  },
+
   addData: async params => {
     set({ is_Loading: true, is_SoftLoading: true })
     try {
-      const response = await axiosInstance.post(`/api/products/post-product`, {data: params})
+      const response = await axiosInstance.post(`/api/products/post-product`, params)
       set({
         is_Loading: false,
         is_SoftLoading: false,
@@ -54,29 +84,40 @@ const useProduct = create(set => ({
     }
   },
 
-  // Fungsi untuk memperbarui data dalam state
-  updateData: params => {
+  updateData: async params => {
     set({ is_Loading: true, is_SoftLoading: true })
-    // Anda perlu menambahkan logika untuk memperbarui data di sini
-    console.log('Update data:', params)
-    set(state => ({ is_Loading: false, is_SoftLoading: false }))
+    try {
+      const response = await axiosInstance.put(`/api/products/put-product`, params)
+      set({
+        is_Loading: false,
+        is_SoftLoading: false,
+        message: response.data?.message
+      })
+      return response
+    } catch (error) {
+      console.error('Terjadi kesalahan:', error)
+      set({ is_Error: true, message: error.response?.data?.message, is_Loading: false, is_SoftLoading: false })
+      return error
+    }
   },
 
   // Fungsi untuk menghapus data dari state
-  deleteData: params => {
+  deleteData: async params => {
     set({ is_Loading: true, is_SoftLoading: true })
-    set(state => {
-      // Menghapus data dari state berdasarkan prcd dan index
-      const filter_data = state.data.filter((item, index) => !(item?.prcd === params?.prcd && index === params?.index))
-      return { data: filter_data, is_Loading: false, is_SoftLoading: false }
-    })
+    try {
+      const response = await axiosInstance.delete(`/api/products/delete-product/${params?.pcd}`, params)
+      set({
+        is_Loading: false,
+        is_SoftLoading: false,
+        message: response.data?.message
+      })
+      return response
+    } catch (error) {
+      console.error('Terjadi kesalahan:', error)
+      set({ is_Error: true, message: error.response?.data?.message, is_Loading: false, is_SoftLoading: false })
+      return error
+    }
   }
 }))
-
-// Fungsi pembuat data produk
-const createData = (prnm, qty, price, prcd, catnm, catcd, crby, tkcd) => {
-  // crby = tanggal pembelian / tanggal kapan barang tersebut di belanjakan dari grosir
-  return { prnm, qty, price, prcd, catnm, catcd, crby, tkcd }
-}
 
 export default useProduct

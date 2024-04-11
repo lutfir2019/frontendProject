@@ -40,6 +40,7 @@ const useUser = create(set => ({
       return error
     }
   },
+  
   getDetails: async params => {
     set({ is_Loading: true, is_SoftLoading: true })
     const { page, page_size } = useUser.getState()
@@ -86,7 +87,7 @@ const useUser = create(set => ({
   updateData: async params => {
     set({ is_Loading: true, is_SoftLoading: true })
     try {
-      const response = await axiosInstance.put(`/api/users/put-user/${params?.unm}`, params)
+      const response = await axiosInstance.put(`/api/users/put-user`, params)
       set({
         is_Loading: false,
         is_SoftLoading: false,
@@ -104,7 +105,7 @@ const useUser = create(set => ({
   deleteData: async params => {
     set({ is_Loading: true, is_SoftLoading: true })
     try {
-      const response = await axiosInstance.delete(`/api/users/delete-user/${params?.unm ?? '_'}`, params)
+      const response = await axiosInstance.delete(`/api/users/delete-user`, params)
       set({
         is_Loading: false,
         is_SoftLoading: false,

@@ -27,6 +27,7 @@ const AddEditShop = () => {
   const handleChange = props => e => {
     setValue({ ...values, [props]: e.target.value })
   }
+
   const onSubmit = async event => {
     event.preventDefault()
 
@@ -43,6 +44,7 @@ const AddEditShop = () => {
         message: ress.data?.message,
         is_Active: true
       })
+      router.push('/shop')
     } else {
       alertStore.setAlert({
         type: 'error',
@@ -60,7 +62,7 @@ const AddEditShop = () => {
               fullWidth
               label='Nama Toko'
               placeholder='Toko Lawang'
-              value={values.spnm}
+              value={values?.spnm}
               onChange={handleChange('spnm')}
               required
             />
@@ -72,7 +74,7 @@ const AddEditShop = () => {
               label='Alamat'
               minRows={2}
               placeholder='Alamat'
-              value={values.almt}
+              value={values?.almt}
               onChange={handleChange('almt')}
               required
             />
@@ -82,7 +84,7 @@ const AddEditShop = () => {
               variant='contained'
               sx={{ marginRight: 3.5 }}
               type='submit'
-              loading={shopStore.is_SoftLoading}
+              loading={shopStore?.is_SoftLoading}
             >
               Save Changes
             </LoadingButton>
