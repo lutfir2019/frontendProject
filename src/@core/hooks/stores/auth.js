@@ -50,7 +50,7 @@ const useAuth = create(set => ({
       return response // Mengembalikan respons dari panggilan API
     } catch (error) {
       console.error('Terjadi kesalahan:', error)
-      set({ is_Error: true, is_Loading: false, is_SoftLoading: false, message: error.response.data.message })
+      set({ is_Error: true, is_Loading: false, is_SoftLoading: false, message: error.response?.data.message || 'Login Filed' })
       return error // Melemparkan kembali kesalahan untuk ditangani di luar fungsi
     }
   },
@@ -77,7 +77,7 @@ const useAuth = create(set => ({
       return response
     } catch (error) {
       console.error('Terjadi kesalahan:', error)
-      set({ is_Error: true, message: error.response.data.message, is_Loading: false, is_SoftLoading: false })
+      set({ is_Error: true, message: error.response?.data.message, is_Loading: false, is_SoftLoading: false })
       return error // Melemparkan kembali kesalahan untuk ditangani di luar fungsi
     }
   }

@@ -21,15 +21,10 @@ const VerticalNavItems = props => {
   const cartStore = useCart()
 
   useEffect(() => {
-    authStore.getData()
-  }, [])
-
-  useEffect(() => {
     cartStore.getData()
   }, [router])
 
   const RenderMenuItems = verticalNavItems?.map((item, index) => {
-    if (!authStore.data) router.push('/pages/login')
     if (item.acces?.includes(authStore.data[0]?.rlcd)) {
       const TagName = resolveNavItemComponent(item)
 

@@ -1,20 +1,29 @@
-import axios from 'axios';
-import Cookies from 'js-cookie';
-
-let baseURL;
+import axios from 'axios'
 
 // Tentukan baseURL berdasarkan lingkungan
-if (process.env.NODE_ENV === 'production') {
-  // Pastikan untuk menggunakan VERCEL_URL saat dalam mode produksi
-  baseURL = process.env.VERCEL_URL;
-} else {
-  // Pastikan untuk menggunakan BASE_URL saat dalam mode pengembangan
-  baseURL = process.env.BASE_URL;
+const getBaseURL = () => {
+  if (process.env.NODE_ENV === 'production') {
+    // Pastikan untuk menggunakan VERCEL_URL saat dalam mode produksi
+    return process.env.VERCEL_URL
+  } else {
+    // Pastikan untuk menggunakan BASE_URL saat dalam mode pengembangan
+    return process.env.NEXT_PUBLIC_BASE_URL
+  }
 }
 
-// Periksa apakah baseURL ada sebelum membuat instance axios
 const axiosInstance = axios.create({
-  baseURL: baseURL || 'http://localhost:5000', // Gunakan nilai default jika baseURL tidak ada
-});
+  baseURL: getBaseURL() // Gunakan nilai default jika baseURL tidak ada
+})
 
-export default axiosInstance;
+// Tambahkan interceptor respons untuk menangani kesalahan jaringan
+axiosInstance.interceptors.response.use(
+  response => {
+    return response;
+  },
+  error => {
+    alert('Network Error')
+    return Promise.reject(error);
+  }
+);
+
+export default axiosInstance
