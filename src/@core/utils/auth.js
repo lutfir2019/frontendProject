@@ -16,7 +16,7 @@ const Auth = ({ children }) => {
     }
   }, [token, router])
 
-  return <>{children}</>
+  return <>{!token ? <></> : children}</>
 }
 
 export default Auth

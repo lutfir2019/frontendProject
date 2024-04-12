@@ -48,7 +48,13 @@ const App = props => {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props
 
   // Variables
-  const getLayout = Component.getLayout ?? (page => <UserLayout>{page}</UserLayout>)
+  const getLayout =
+    Component.getLayout ??
+    (page => (
+      <Auth>
+        <UserLayout>{page}</UserLayout>
+      </Auth>
+    ))
 
   return (
     <CacheProvider value={emotionCache}>
@@ -65,11 +71,7 @@ const App = props => {
       <SettingsProvider>
         <SettingsConsumer>
           {({ settings }) => {
-            return (
-              <Auth>
-                <ThemeComponent settings={settings}>{getLayout(<Component {...pageProps} />)}</ThemeComponent>
-              </Auth>
-            )
+            return <ThemeComponent settings={settings}>{getLayout(<Component {...pageProps} />)}</ThemeComponent>
           }}
         </SettingsConsumer>
       </SettingsProvider>
