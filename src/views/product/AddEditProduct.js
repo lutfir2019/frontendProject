@@ -20,6 +20,7 @@ import useAuth from 'src/@core/hooks/stores/auth'
 import useAlert from 'src/@core/hooks/stores/alert'
 import useShop from 'src/@core/hooks/stores/shop/shop'
 import ConfirmDeleteTrash from '../dialogs/ConfirmDeleteTrash'
+import { deleteSpace } from 'src/@core/utils/globalFunction'
 
 const CustomInput = forwardRef((props, ref) => {
   return <TextField fullWidth {...props} inputRef={ref} label='Tanggal Pembelian' autoComplete='off' />
@@ -77,7 +78,7 @@ const AddEditProduct = () => {
       pcd: '',
       price: 0,
       crby: date,
-      qty: 0,
+      qty: 1,
       spcd: authStore?.data[0]?.spcd,
       spnm: authStore?.data[0]?.spnm
     }
@@ -110,7 +111,7 @@ const AddEditProduct = () => {
     const selectedShop = shop_list?.find(({ spcd }) => spcd == value)
 
     if (updatedProductList[index][name] == updatedProductList[index]['pcd']) {
-      updatedProductList[index]['pcd'] = value?.toUpperCase()
+      updatedProductList[index]['pcd'] = deleteSpace(value?.toUpperCase())
     } else {
       updatedProductList[index][name] = value
     }
@@ -148,7 +149,7 @@ const AddEditProduct = () => {
         pcd: '',
         price: 0,
         crby: date,
-        qty: 0,
+        qty: 1,
         spcd: authStore?.data[0]?.spcd,
         spnm: authStore?.data[0]?.spnm
       }

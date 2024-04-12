@@ -40,6 +40,7 @@ import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
 import { Alert, LoadingButton } from '@mui/lab'
 import useAuth from 'src/@core/hooks/stores/auth'
 import useAlert from 'src/@core/hooks/stores/alert'
+import { deleteSpace, notSpecialCharacter } from 'src/@core/utils/globalFunction'
 
 // ** Styled Components
 const Card = styled(MuiCard)(({ theme }) => ({
@@ -62,15 +63,11 @@ const FormControlLabel = styled(MuiFormControlLabel)(({ theme }) => ({
 const LoginPage = () => {
   // ** State
   const [values, setValues] = useState({
-    username: '',
+    unm: '',
     password: '',
     showPassword: false
   })
-
-  const [error, setError] = useState({
-    is_Error: false,
-    message: ''
-  })
+  const [isHaveSpecialCharacter, setCheckCharacter] = useState(false)
 
   // ** Hook
   const theme = useTheme()
@@ -80,6 +77,7 @@ const LoginPage = () => {
 
   const handleChange = prop => event => {
     setValues({ ...values, [prop]: event.target.value })
+    if (prop == 'unm') setCheckCharacter(!notSpecialCharacter(event.target.value))
   }
 
   const handleClickShowPassword = () => {
@@ -90,12 +88,9 @@ const LoginPage = () => {
     event.preventDefault()
   }
 
-  useEffect(() => {
-    setError({ ...authStore })
-  }, [authStore])
-
   const onSubmit = async e => {
     e.preventDefault()
+    if (isHaveSpecialCharacter) return
     try {
       const ress = await authStore.login(values)
       if (ress.status == 200) {
@@ -192,9 +187,9 @@ const LoginPage = () => {
             <Typography variant='h5' sx={{ fontWeight: 600, marginBottom: 1.5 }}>
               Welcome to {themeConfig.templateName}! 👋🏻
             </Typography>
-            {error.is_Error ? (
+            {authStore.is_Error ? (
               <Alert variant='standard' severity='error' color='error'>
-                {error.message}
+                {authStore.message}
               </Alert>
             ) : (
               <Typography variant='body2'>Please sign-in to your account and start the adventure</Typography>
@@ -207,9 +202,14 @@ const LoginPage = () => {
               id='unm'
               label='Username'
               onChange={handleChange('unm')}
-              sx={{ marginBottom: 4 }}
+              sx={{ marginBottom: isHaveSpecialCharacter ? 0 : 4 }}
             />
-            <FormControl fullWidth>
+            {isHaveSpecialCharacter && (
+              <Typography variant='caption' color='red'>
+                Username tidak boleh mengandung spasi atau karakter khusus
+              </Typography>
+            )}
+            <FormControl fullWidth sx={{marginTop: isHaveSpecialCharacter && 2 }}>
               <InputLabel htmlFor='auth-login-password'>Password</InputLabel>
               <OutlinedInput
                 label='Password'

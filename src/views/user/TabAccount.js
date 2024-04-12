@@ -22,6 +22,7 @@ import useAuth from 'src/@core/hooks/stores/auth'
 import useUser from 'src/@core/hooks/stores/user/user'
 import useShop from 'src/@core/hooks/stores/shop/shop'
 import PasswordField from '../password/password'
+import { deleteSpace } from 'src/@core/utils/globalFunction'
 
 const rows_role = [
   {
@@ -79,7 +80,11 @@ const TabAccount = () => {
     const selectedRlnm = rows_role?.find(({ rlcd }) => rlcd == value)
     const selectedTknm = shop_list?.find(({ spcd }) => spcd == value)
 
-    setValue({ ...values, [name]: value })
+    if(name == 'unm'){
+      setValue({ ...values, ['unm']: deleteSpace(value) })
+    }else{
+      setValue({ ...values, [name]: value })
+    }
 
     if (selectedRlnm) {
       const { rlnm } = selectedRlnm
@@ -110,13 +115,14 @@ const TabAccount = () => {
     } else {
       ress = await userStore.updateData(values)
     }
-    
+
     if (ress.status == 200) {
       alertStore.setAlert({
         type: 'success',
         message: ress.data?.message,
         is_Active: true
       })
+      userStore.setData({ ...userStore.data, ...values })
       router.push(`/users/add-edit/${values?.unm}/`)
     } else {
       alertStore.setAlert({
@@ -136,7 +142,7 @@ const TabAccount = () => {
               fullWidth
               label='Username'
               name='unm'
-              placeholder='johnDoe'
+              placeholder='jhonDoe'
               value={values?.unm}
               onChange={handleChange}
               required

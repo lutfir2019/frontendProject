@@ -51,7 +51,7 @@ const TabInfo = () => {
         message: ress.data?.message,
         is_Active: true
       })
-      userStore.setData({...userStore.data, ...values})
+      userStore.setData({ ...userStore.data, ...values })
     } else {
       alertStore.setAlert({
         type: 'error',

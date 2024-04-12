@@ -1,4 +1,5 @@
 import Cookies from 'js-cookie'
+import { FormatLetterCaseLower } from 'mdi-material-ui'
 import axiosInstance from 'src/@core/utils/axiosInstance'
 import { create } from 'zustand'
 
@@ -31,8 +32,8 @@ const useAuth = create(set => ({
   },
 
   login: async credentials => {
+    set({ is_Loading: true, is_SoftLoading: true })
     try {
-      set({ is_Loading: true, is_SoftLoading: true })
       const response = await axiosInstance.post('/api/auth/login', credentials)
       axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${response.data?.token}`
 
@@ -45,7 +46,8 @@ const useAuth = create(set => ({
       set({
         data: [response.data.data],
         message: response.data.message,
-        token: response.data.token
+        token: response.data.token,
+        is_Error: false
       })
       return response // Mengembalikan respons dari panggilan API
     } catch (error) {
@@ -57,8 +59,8 @@ const useAuth = create(set => ({
 
   // Fungsi untuk melakukan logout
   logout: async () => {
+    set({ is_Loading: true, is_SoftLoading: true })
     try {
-      set({ is_Loading: true, is_SoftLoading: true })
       const { token } = useAuth.getState()
       const response = await axiosInstance.post('/api/auth/logout', {
         sessionid: token // Menggunakan state.token langsung tanpa menggunakan set

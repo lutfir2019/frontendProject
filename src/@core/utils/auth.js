@@ -7,7 +7,6 @@ const Auth = ({ children }) => {
   const router = useRouter()
   const authStore = useAuth()
   const token = Cookies.get('__sid') || authStore.token
-  const isTrue = router.pathname != '/pages/login' && !token
 
   useEffect(() => {
     authStore.getData()
@@ -16,7 +15,7 @@ const Auth = ({ children }) => {
     if (router.pathname == '/pages/login' && token) router.replace('/')
   }, [token, router])
 
-  return <>{isTrue ? <div></div> : children}</>
+  return <>{children}</>
 }
 
 export default Auth
