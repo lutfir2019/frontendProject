@@ -18,12 +18,12 @@ const axiosInstance = axios.create({
 // Tambahkan interceptor respons untuk menangani kesalahan jaringan
 axiosInstance.interceptors.response.use(
   response => {
-    return response;
+    return response
   },
   error => {
-    alert('Network Error')
-    return Promise.reject(error);
+    if (!error.response) alert('Network Error')
+    return Promise.reject(error)
   }
-);
+)
 
 export default axiosInstance

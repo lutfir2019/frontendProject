@@ -104,7 +104,7 @@ const LoginPage = () => {
           message: ress.data?.message,
           is_Active: true
         })
-        router.push('/')
+        router.replace('/')
       }
     } catch (error) {
       console.error(error)
