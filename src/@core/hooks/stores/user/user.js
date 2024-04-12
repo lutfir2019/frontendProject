@@ -11,6 +11,7 @@ const useUser = create(set => ({
   page_size: 10,
   total_page: 1,
   count_item: 0,
+  setData: newData => set({data: newData}),
 
   // Fungsi untuk mengambil data produk berdasarkan parameter
   getData: async params => {

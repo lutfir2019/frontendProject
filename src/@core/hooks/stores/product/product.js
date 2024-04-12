@@ -105,7 +105,7 @@ const useProduct = create(set => ({
   deleteData: async params => {
     set({ is_Loading: true, is_SoftLoading: true })
     try {
-      const response = await axiosInstance.delete(`/api/products/delete-product/${params?.pcd}`, params)
+      const response = await axiosInstance.delete(`/api/products/delete-product/${params?.pcd}`, { data: params })
       set({
         is_Loading: false,
         is_SoftLoading: false,

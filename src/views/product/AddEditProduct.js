@@ -19,6 +19,7 @@ import useProduct from 'src/@core/hooks/stores/product/product'
 import useAuth from 'src/@core/hooks/stores/auth'
 import useAlert from 'src/@core/hooks/stores/alert'
 import useShop from 'src/@core/hooks/stores/shop/shop'
+import ConfirmDeleteTrash from '../dialogs/ConfirmDeleteTrash'
 
 const CustomInput = forwardRef((props, ref) => {
   return <TextField fullWidth {...props} inputRef={ref} label='Tanggal Pembelian' autoComplete='off' />
@@ -107,7 +108,12 @@ const AddEditProduct = () => {
     const updatedProductList = [...productList]
     const selectedCatnm = listCatnm?.find(({ catcd }) => catcd == value)
     const selectedShop = shop_list?.find(({ spcd }) => spcd == value)
-    updatedProductList[index][name] = value
+
+    if (updatedProductList[index][name] == updatedProductList[index]['pcd']) {
+      updatedProductList[index]['pcd'] = value?.toUpperCase()
+    } else {
+      updatedProductList[index][name] = value
+    }
 
     if (selectedCatnm) {
       const { catnm } = selectedCatnm
@@ -151,11 +157,28 @@ const AddEditProduct = () => {
 
   const handleDeleteProduct = async index => {
     const updatedProductList = [...productList]
-    const deleteProduct = productList[index]
     updatedProductList.splice(index, 1)
     setProductList(updatedProductList)
-    if (PCD == '-') {
-      const ress = await productStore.deleteData(deleteProduct)
+  }
+
+  const handleDeleteDataProduct = index => async consfirm => {
+    const deleteProduct = productList[index]
+    if (!consfirm) return
+
+    const ress = await productStore.deleteData({ ...deleteProduct, crby: '' })
+    if (ress.status == 200) {
+      alertStore.setAlert({
+        type: 'success',
+        message: ress.data?.message,
+        is_Active: true
+      })
+      router.push('/product')
+    } else {
+      alertStore.setAlert({
+        type: 'error',
+        message: ress?.response?.data?.message,
+        is_Active: true
+      })
     }
   }
 
@@ -194,8 +217,8 @@ const AddEditProduct = () => {
                 fullWidth
                 name='pcd'
                 label='Kode Produk'
-                placeholder='contoh: KSK01'
-                value={product?.pcd}
+                placeholder='contoh: CODE01'
+                value={product?.pcd?.toUpperCase()}
                 onChange={e => handleChange(e, index)}
                 required
                 disabled={isDisableField || PCD != '-'}
@@ -297,11 +320,15 @@ const AddEditProduct = () => {
               </FormControl>
             </Grid>
           </Grid>
-          {productList?.length > 1 && !isDisableField && (
+          {!isDisableField && (
             <Grid container padding={3}>
-              <DeleteButton size='small' type='button' onClick={() => handleDeleteProduct(index)}>
-                <TrashCanOutline />
-              </DeleteButton>
+              {PCD == '-' ? (
+                <DeleteButton size='small' type='button' onClick={() => handleDeleteProduct(index)}>
+                  <TrashCanOutline />
+                </DeleteButton>
+              ) : (
+                <ConfirmDeleteTrash handleValue={handleDeleteDataProduct(index)} />
+              )}
             </Grid>
           )}
           <Divider sx={{ marginTop: 3 }} />
@@ -310,7 +337,6 @@ const AddEditProduct = () => {
       {PCD == '-' && (
         <CardActions
           sx={{
-            marginTop: 5,
             display: 'flex',
             justifyContent: 'center'
           }}

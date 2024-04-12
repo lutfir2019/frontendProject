@@ -16,7 +16,7 @@ const Auth = ({ children }) => {
     if (router.pathname == '/pages/login' && token) router.replace('/')
   }, [token, router])
 
-  return <>{isTrue ? <></> : children}</>
+  return <>{isTrue ? <div></div> : children}</>
 }
 
 export default Auth
