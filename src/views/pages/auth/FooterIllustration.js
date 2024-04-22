@@ -1,6 +1,6 @@
 'use client'
 // ** React Imports
-import { Fragment, useEffect } from 'react'
+import { Fragment } from 'react'
 
 // ** MUI Components
 import useMediaQuery from '@mui/material/useMediaQuery'
@@ -36,14 +36,6 @@ const FooterIllustrationsV1 = props => {
 
   // ** Hook
   const theme = useTheme()
-  // useEffect(() => {
-  //   if (token) {
-  //     const time = setTimeout(() => {
-  //       router.replace('/')
-  //     }, 1000)
-  //     return () => clearTimeout(time)
-  //   }
-  // }, [])
 
   // ** Vars
   const hidden = useMediaQuery(theme.breakpoints.down('md'))

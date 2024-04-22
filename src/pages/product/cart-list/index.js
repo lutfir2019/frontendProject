@@ -52,8 +52,8 @@ const CartList = () => {
   const count_product = {}
   let total_price = 0
 
-  useEffect(() => {
-    getData()
+  useEffect(async () => {
+    await getData()
   }, [])
 
   data.forEach((item, _i) => {

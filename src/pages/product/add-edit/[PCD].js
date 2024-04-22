@@ -19,7 +19,6 @@ const ProductDetails = () => {
   useEffect(async () => {
     await shopStore.getData({ page: 1, page_size: 999 })
     if (PCD == '-') return
-    console.log(router.query?.spcd)
     const ress = await productStore.getDetails({ pcd: PCD, spcd: router.query?.spcd })
     if (ress.status != 200) {
       alertStore.setAlert({

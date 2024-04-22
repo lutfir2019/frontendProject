@@ -20,8 +20,8 @@ const VerticalNavItems = props => {
   const router = useRouter()
   const cartStore = useCart()
 
-  useEffect(() => {
-    cartStore.getData()
+  useEffect(async () => {
+    await cartStore.getData()
   }, [router])
 
   const RenderMenuItems = verticalNavItems?.map((item, index) => {

@@ -13,10 +13,10 @@ const Shop = () => {
   const { SPCD } = router.query
   const authStore = useAuth()
 
-  useEffect(() => {
+  useEffect(async () => {
     if (authStore.data[0]?.rlcd != 'ROLE-1') router.replace('/')
     if (SPCD == '-') return
-    shopStore.getDetails({ spcd: SPCD })
+    await shopStore.getDetails({ spcd: SPCD })
   }, [])
 
   return (
