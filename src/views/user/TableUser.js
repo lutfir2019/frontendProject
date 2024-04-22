@@ -121,7 +121,7 @@ const TableUser = () => {
             alignItems: 'center'
           }}
         >
-          <Link href={'/users/add-edit/-'}>
+          <Link href={'/users/add-edit/-'} passHref>
             <Button
               size='medium'
               type='button'
@@ -148,7 +148,7 @@ const TableUser = () => {
             {rows?.length ? (
               rows.map(row => (
                 <StyledTableRow key={row?.unm}>
-                  <Link href={`/users/add-edit/${row?.unm}`}>
+                  <Link href={`/users/add-edit/${row?.unm}`} passHref>
                     <StyledTableCell
                       component='th'
                       scope='row'

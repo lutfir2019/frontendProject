@@ -361,7 +361,7 @@ const AddEditProduct = () => {
             Submit
           </LoadingButton>
         )}
-        <Link href={'/product/'}>
+        <Link href={'/product/'} passHref>
           <Button type='button' size='large' color='secondary' variant='outlined'>
             {isDisableField ? 'Kembali' : 'Cancel'}
           </Button>

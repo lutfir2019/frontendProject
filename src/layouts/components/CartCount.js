@@ -38,7 +38,7 @@ const CartCount = () => {
   }, [data])
 
   return (
-    <Link href='/product/cart-list/'>
+    <Link href='/product/cart-list/' passHref>
       <CartButton>
         <CartOutline fontSize='medium' sx={{ position: 'absolute' }} />
         {count > 0 && (

@@ -10,7 +10,7 @@ const ReceiptView = () => {
           <h1>Hello</h1>
         </Grid>
         <Grid item>
-          <Link href={'/product'}>
+          <Link href={'/product'} passHref>
             <Button>Kembali</Button>
           </Link>
         </Grid>

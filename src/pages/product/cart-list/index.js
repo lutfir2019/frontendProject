@@ -211,7 +211,7 @@ const CartList = () => {
           <LoadingButton variant='contained' sx={{ marginRight: 3.5 }} type='submit' loading={is_Loading}>
             Bayar
           </LoadingButton>
-          <Link href={'/product/'}>
+          <Link href={'/product/'} passHref>
             <Button type='button' variant='outlined'>
               Kembali
             </Button>

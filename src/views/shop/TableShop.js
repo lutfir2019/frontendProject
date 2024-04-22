@@ -91,7 +91,7 @@ const TableShop = () => {
             alignItems: 'center'
           }}
         >
-          <Link href={'/shop/add-edit/-'}>
+          <Link href={'/shop/add-edit/-'} passHref>
             <Button
               size='medium'
               type='button'
@@ -118,7 +118,7 @@ const TableShop = () => {
             {rows?.length ? (
               rows?.map(row => (
                 <StyledTableRow key={row?.spcd}>
-                  <Link href={`/shop/add-edit/${row?.spcd}`}>
+                  <Link href={`/shop/add-edit/${row?.spcd}`} passHref>
                     <StyledTableCell
                       component='th'
                       scope='row'

@@ -111,7 +111,7 @@ const TabInfo = () => {
             >
               Save Changes
             </LoadingButton>
-            <Link href='/users'>
+            <Link href='/users' passHref>
               <Button type='button' variant='outlined' color='secondary'>
                 Cancel
               </Button>

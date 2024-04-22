@@ -88,7 +88,7 @@ const AddEditShop = () => {
             >
               Save Changes
             </LoadingButton>
-            <Link href='/shop'>
+            <Link href='/shop' passHref>
               <Button type='button' variant='outlined' color='secondary'>
                 Cancel
               </Button>
