@@ -4,9 +4,9 @@ import { useEffect } from 'react'
 import PaginationOutlined from 'src/views/pagination/paginationOutlined'
 import TableShop from 'src/views/shop/TableShop'
 import { useRouter } from 'next/router'
-import useAuth from 'src/@core/hooks/stores/auth'
-import useShop from 'src/@core/hooks/stores/shop/shop'
-import useAlert from 'src/@core/hooks/stores/alert'
+import useAuth from '@/stores/auth'
+import useShop from '@/stores/shop/shop'
+import useAlert from '@/stores/alert'
 
 const User = () => {
   const authStore = useAuth()

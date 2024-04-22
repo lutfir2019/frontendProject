@@ -20,9 +20,9 @@ import KeyOutline from 'mdi-material-ui/KeyOutline'
 import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
 import { LoadingButton } from '@mui/lab'
 import Link from 'next/link'
-import useAlert from 'src/@core/hooks/stores/alert'
+import useAlert from '@/stores/alert'
 import { useRouter } from 'next/router'
-import useUser from 'src/@core/hooks/stores/user/user'
+import useUser from '@/stores/user/user'
 
 const TabSecurity = () => {
   const router = useRouter()

@@ -4,8 +4,8 @@ import VerticalNavLink from './VerticalNavLink'
 import VerticalNavSectionTitle from './VerticalNavSectionTitle'
 import { useEffect } from 'react'
 import { useRouter } from 'next/router'
-import useAuth from 'src/@core/hooks/stores/auth'
-import useCart from 'src/@core/hooks/stores/cart/useCart'
+import useAuth from '@/stores/auth'
+import useCart from '@/stores/cart/useCart'
 
 const resolveNavItemComponent = item => {
   if (item.sectionTitle) return VerticalNavSectionTitle

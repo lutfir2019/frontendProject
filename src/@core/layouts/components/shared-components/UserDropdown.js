@@ -19,7 +19,7 @@ import Typography from '@mui/material/Typography'
 import LogoutVariant from 'mdi-material-ui/LogoutVariant'
 import AccountOutline from 'mdi-material-ui/AccountOutline'
 import Cookies from 'js-cookie'
-import useAuth from 'src/@core/hooks/stores/auth'
+import useAuth from '@/stores/auth'
 
 // ** Styled Components
 const BadgeContentSpan = styled('span')(({ theme }) => ({

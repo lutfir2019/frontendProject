@@ -14,11 +14,11 @@ import TableCell, { tableCellClasses } from '@mui/material/TableCell'
 import { Plus } from 'mdi-material-ui'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
-import useUser from 'src/@core/hooks/stores/user/user'
-import useAuth from 'src/@core/hooks/stores/auth'
-import useAlert from 'src/@core/hooks/stores/alert'
+import useUser from '@/stores/user/user'
+import useAuth from '@/stores/auth'
+import useAlert from '@/stores/alert'
 import ConfirmDelete from '../dialogs/ConfirmDelete'
-import useShop from 'src/@core/hooks/stores/shop/shop'
+import useShop from '@/stores/shop/shop'
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {

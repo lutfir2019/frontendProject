@@ -5,9 +5,9 @@ import Divider from '@mui/material/Divider'
 import CardHeader from '@mui/material/CardHeader'
 import { useRouter } from 'next/router'
 import AddEditProduct from 'src/views/product/AddEditProduct'
-import useProduct from 'src/@core/hooks/stores/product/product'
-import useShop from 'src/@core/hooks/stores/shop/shop'
-import useAlert from 'src/@core/hooks/stores/alert'
+import useProduct from '@/stores/product/product'
+import useShop from '@/stores/shop/shop'
+import useAlert from '@/stores/alert'
 
 const ProductDetails = () => {
   const router = useRouter()

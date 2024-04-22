@@ -3,8 +3,8 @@ import { LoadingButton } from '@mui/lab'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-import useAlert from 'src/@core/hooks/stores/alert'
-import useShop from 'src/@core/hooks/stores/shop/shop'
+import useAlert from '@/stores/alert'
+import useShop from '@/stores/shop/shop'
 
 const { CardContent, Grid, TextField, Button } = require('@mui/material')
 

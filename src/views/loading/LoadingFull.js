@@ -5,7 +5,7 @@ import Dialog from '@mui/material/Dialog'
 import DialogContent from '@mui/material/DialogContent'
 import DialogContentText from '@mui/material/DialogContentText'
 import CircularProgress from '@mui/material/CircularProgress'
-import useAlert from 'src/@core/hooks/stores/alert'
+import useAlert from '@/stores/alert'
 
 const LoadingFull = () => {
   const alertStore = useAlert()

@@ -38,8 +38,8 @@ import BlankLayout from 'src/@core/layouts/BlankLayout'
 // ** Demo Imports
 import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
 import { Alert, LoadingButton } from '@mui/lab'
-import useAuth from 'src/@core/hooks/stores/auth'
-import useAlert from 'src/@core/hooks/stores/alert'
+import useAuth from '@/stores/auth'
+import useAlert from '@/stores/alert'
 import { deleteSpace, notSpecialCharacter } from 'src/@core/utils/globalFunction'
 
 // ** Styled Components

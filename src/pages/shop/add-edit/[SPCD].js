@@ -1,8 +1,8 @@
 'use client'
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
-import useAuth from 'src/@core/hooks/stores/auth'
-import useShop from 'src/@core/hooks/stores/shop/shop'
+import useAuth from '@/stores/auth'
+import useShop from '@/stores/shop/shop'
 import AddEditShop from 'src/views/shop/AddEditShop'
 
 const { Card, CardHeader, Divider } = require('@mui/material')

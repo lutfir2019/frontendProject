@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 import Cookies from 'js-cookie'
-import useAuth from '../hooks/stores/auth'
+import useAuth from '@/stores/auth'
 
 const Auth = ({ children }) => {
   const router = useRouter()

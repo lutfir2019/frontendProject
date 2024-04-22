@@ -14,11 +14,11 @@ import { CartPlus, Plus } from 'mdi-material-ui'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import { Button, CardActions, FormControl, InputLabel, MenuItem, Select } from '@mui/material'
-import useAuth from 'src/@core/hooks/stores/auth'
-import useProduct from 'src/@core/hooks/stores/product/product'
-import useCart from 'src/@core/hooks/stores/cart/useCart'
+import useAuth from '@/stores/auth'
+import useProduct from '@/stores/product/product'
+import useCart from '@/stores/cart/useCart'
 import { formatRupiah } from 'src/@core/utils/globalFunction'
-import useShop from 'src/@core/hooks/stores/shop/shop'
+import useShop from '@/stores/shop/shop'
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {

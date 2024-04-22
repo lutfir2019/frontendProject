@@ -3,11 +3,11 @@ import { Grid } from '@mui/material'
 import PaginationOutlined from 'src/views/pagination/paginationOutlined'
 import { useEffect } from 'react'
 import TableProduct from 'src/views/product/TableProduct'
-import useProduct from 'src/@core/hooks/stores/product/product'
-import useAlert from 'src/@core/hooks/stores/alert'
+import useProduct from '@/stores/product/product'
+import useAlert from '@/stores/alert'
 import { useRouter } from 'next/router'
-import useShop from 'src/@core/hooks/stores/shop/shop'
-import useAuth from 'src/@core/hooks/stores/auth'
+import useShop from '@/stores/shop/shop'
+import useAuth from '@/stores/auth'
 
 const Product = () => {
   const productStore = useProduct()

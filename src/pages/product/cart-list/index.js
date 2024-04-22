@@ -19,8 +19,8 @@ import Link from 'next/link'
 import { useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { LoadingButton } from '@mui/lab'
-import useAlert from 'src/@core/hooks/stores/alert'
-import useCart from 'src/@core/hooks/stores/cart/useCart'
+import useAlert from '@/stores/alert'
+import useCart from '@/stores/cart/useCart'
 
 const ButtonClick = styled(ButtonBase)(({ theme }) => ({
   '&:hover': {

@@ -1,5 +1,4 @@
 import Cookies from 'js-cookie'
-import { FormatLetterCaseLower } from 'mdi-material-ui'
 import axiosInstance from 'src/@core/utils/axiosInstance'
 import { create } from 'zustand'
 
