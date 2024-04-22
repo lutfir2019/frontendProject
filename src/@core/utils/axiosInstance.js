@@ -1,11 +1,7 @@
 import axios from 'axios'
 
 const getBaseURL = () => {
-  if (process.env.NODE_ENV === 'production') {
-    return process.env.VERCEL_URL
-  } else {
-    return process.env.NEXT_PUBLIC_BASE_URL
-  }
+  return process.env.NEXT_PUBLIC_BASE_URL
 }
 
 const axiosInstance = axios.create({
