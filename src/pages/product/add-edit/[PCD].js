@@ -17,15 +17,20 @@ const ProductDetails = () => {
   const alertStore = useAlert()
 
   useEffect(async () => {
-    await shopStore.getData({ page: 1, page_size: 999 })
-    if (PCD == '-') return
-    const ress = await productStore.getDetails({ pcd: PCD, spcd: router.query?.spcd })
-    if (ress.status != 200) {
-      alertStore.setAlert({
-        type: 'error',
-        message: ress.response?.data?.message,
-        is_Active: true
-      })
+    alertStore.setLoading({ is_Loading: true })
+    try {
+      await shopStore.getData({ page: 1, page_size: 999 })
+      if (PCD == '-') return
+      const ress = await productStore.getDetails({ pcd: PCD, spcd: router.query?.spcd })
+      if (ress.status != 200) {
+        alertStore.setAlert({
+          type: 'error',
+          message: ress.response?.data?.message,
+          is_Active: true
+        })
+      }
+    } finally {
+      alertStore.setLoading({ is_Loading: false })
     }
   }, [])
 

@@ -17,6 +17,7 @@ const LoadingFull = () => {
         disableEscapeKeyDown
         aria-labelledby='alert-dialog-title'
         aria-describedby='alert-dialog-description'
+        sx={{maxWidth: '50%', justifySelf: 'center'}}
         onClose={(event, reason) => {
           if (reason !== 'backdropClick') {
             handleClose()

@@ -26,6 +26,7 @@ import { useRouter } from 'next/router'
 import useAuth from '@/stores/auth'
 import useUser from '@/stores/user/user'
 import useShop from '@/stores/shop/shop'
+import useAlert from '@/stores/alert'
 
 const Tab = styled(MuiTab)(({ theme }) => ({
   [theme.breakpoints.down('md')]: {
@@ -56,18 +57,24 @@ const AccountDetails = () => {
   const { UNM } = router.query
   const [tab_after_add, setTabAfterAdd] = useState(false)
   const [userMatch, setUserMatch] = useState(false)
+  const alertStore = useAlert()
 
   useEffect(async () => {
-    await shopStore.getData({page: 1, page_size: 999})
-    
-    if (UNM == '-') return
-    await userStore.getDetails({ unm: UNM })
-    setTabAfterAdd(true)
+    alertStore.setLoading({ is_Loading: true })
+    try {
+      await shopStore.getData({ page: 1, page_size: 999 })
 
-    if ( authStore.data[0]?.rlcd === 'ROLE-1'){
-      setUserMatch(true)
-    }else if(authStore.data[0]?.unm === UNM){
-      setUserMatch(true)
+      if (UNM == '-') return
+      await userStore.getDetails({ unm: UNM })
+      setTabAfterAdd(true)
+
+      if (authStore.data[0]?.rlcd === 'ROLE-1') {
+        setUserMatch(true)
+      } else if (authStore.data[0]?.unm === UNM) {
+        setUserMatch(true)
+      }
+    } finally {
+      alertStore.setLoading({ is_Loading: false })
     }
   }, [UNM])
 

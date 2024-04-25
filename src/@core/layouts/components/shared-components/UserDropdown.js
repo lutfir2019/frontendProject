@@ -20,6 +20,7 @@ import LogoutVariant from 'mdi-material-ui/LogoutVariant'
 import AccountOutline from 'mdi-material-ui/AccountOutline'
 import Cookies from 'js-cookie'
 import useAuth from '@/stores/auth'
+import useAlert from '@/stores/alert'
 
 // ** Styled Components
 const BadgeContentSpan = styled('span')(({ theme }) => ({
@@ -34,6 +35,7 @@ const UserDropdown = () => {
   // ** States
   const [anchorEl, setAnchorEl] = useState(null)
   const authStore = useAuth()
+  const alertStore = useAlert()
 
   // ** Hooks
   const router = useRouter()
@@ -50,7 +52,12 @@ const UserDropdown = () => {
   }
 
   const handleLogout = async () => {
-    await authStore.logout().then(() => handleDropdownClose('/pages/login'))
+    alertStore.setLoading({ is_Loading: true })
+    try {
+      await authStore.logout().then(() => handleDropdownClose('/pages/login'))
+    } finally {
+      alertStore.setLoading({ is_Loading: false })
+    }
   }
 
   const styles = {
