@@ -25,7 +25,7 @@ const Shop = () => {
       alertStore.setLoading({ is_Loading: false })
     }
   }, [])
-
+ 
   return (
     <Card>
       <CardHeader title='Detail Toko' titleTypographyProps={{ variant: 'h6' }} />
